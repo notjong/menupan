@@ -47,7 +47,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
 
 ### 2-3. `_설정` 시트
 
-- [ ] **매장명·테마·자동전환초를 읽는다** (`shouldReadStoreNameThemeAndAutoAdvanceFromSettingsSheet`)
+- [x] **매장명·테마·자동전환초를 읽는다** (`shouldReadStoreNameThemeAndAutoAdvanceFromSettingsSheet`)
   - `매장명=빌런 커피`, `테마=cream`, `자동전환초=5` → `{ storeName: "빌런 커피", theme: "cream", autoAdvanceSec: 5 }`
 - [ ] **`_설정` 시트가 없으면 기본값을 쓴다** (`shouldUseDefaultsWhenSettingsSheetMissing`)
   - `_설정` 없음 → 매장명 `""`, 기본 테마, 자동전환 `0`(수동)

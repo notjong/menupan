@@ -2,6 +2,7 @@ import * as XLSX from "xlsx";
 
 const HIDDEN_SHEET_PREFIX = "_";
 const SOLD_OUT_MARK = "Y";
+const SETTINGS_SHEET = "_설정";
 
 const MENU_COLUMNS = {
   name: "메뉴명",
@@ -9,6 +10,14 @@ const MENU_COLUMNS = {
   desc: "설명",
   soldOut: "품절",
   category: "카테고리",
+};
+
+const SETTINGS_COLUMNS = { key: "항목", value: "값" };
+
+const SETTING_KEYS = {
+  storeName: "매장명",
+  theme: "테마",
+  autoAdvanceSec: "자동전환초",
 };
 
 function isMenuSheet(name) {
@@ -41,14 +50,18 @@ function parseMenuSheet(sheet) {
   return XLSX.utils.sheet_to_json(sheet).filter(hasMenuName).map(toMenuItem);
 }
 
-export function parseWorkbook(workbook) {
-  const settings = Object.fromEntries(
-    XLSX.utils.sheet_to_json(workbook.Sheets["_설정"]).map((row) => [row["항목"], row["값"]]),
+function readSettings(sheet) {
+  return Object.fromEntries(
+    XLSX.utils.sheet_to_json(sheet).map((row) => [row[SETTINGS_COLUMNS.key], row[SETTINGS_COLUMNS.value]]),
   );
+}
+
+export function parseWorkbook(workbook) {
+  const settings = readSettings(workbook.Sheets[SETTINGS_SHEET]);
   return {
-    storeName: settings["매장명"],
-    theme: settings["테마"],
-    autoAdvanceSec: settings["자동전환초"],
+    storeName: settings[SETTING_KEYS.storeName],
+    theme: settings[SETTING_KEYS.theme],
+    autoAdvanceSec: settings[SETTING_KEYS.autoAdvanceSec],
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
       items: parseMenuSheet(workbook.Sheets[name]),

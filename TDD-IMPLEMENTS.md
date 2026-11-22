@@ -187,14 +187,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T12 매장명·테마·자동전환초를 읽는다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldReadStoreNameThemeAndAutoAdvanceFromSettingsSheet`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: `_설정` 시트(헤더 `항목 | 값`) 행 `매장명 | 빌런 커피`, `테마 | cream`, `자동전환초 | 5`, 옵션 `{ themes: ["cream", "beige"], defaultTheme: "beige" }` → `{ storeName: "빌런 커피", theme: "cream", autoAdvanceSec: 5 }`
 - Red 기대 실패: `AssertionError` (`storeName` 등이 없음)
 - Red 기록: `AssertionError: actual { storeName: undefined, theme: undefined, autoAdvanceSec: undefined }`
 - Green 기록: Obvious Implementation. `_설정` 시트를 `{항목: 값}` 맵으로 바꿔 세 값을 읽는다. 옵션 인자는 아직 쓰지 않아 받지 않았다(T13·T15에서 필요). 정리 거리: 시트 이름·열 이름·항목 이름 문자열 6개, `parseWorkbook` 안의 설정 읽기.
-- Refactor 기록:
+- Refactor 기록: (1) Extract Function `readSettings` (2) Introduce Constant `SETTINGS_SHEET`, `SETTINGS_COLUMNS`, `SETTING_KEYS`. 단계마다 `npm test` 통과. 남은 하드코딩 없음.
 
 ### T13 `_설정` 시트가 없으면 기본값을 쓴다
 
