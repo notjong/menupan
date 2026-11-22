@@ -5,7 +5,10 @@ import { createApp } from "../src/app.mjs";
 async function startServer(t, app) {
   const server = app.listen(0);
   await new Promise((resolve) => server.once("listening", resolve));
-  t.after(() => new Promise((resolve) => server.close(resolve)));
+  t.after(() => {
+    server.closeAllConnections();
+    return new Promise((resolve) => server.close(resolve));
+  });
   return `http://127.0.0.1:${server.address().port}`;
 }
 
@@ -17,4 +20,16 @@ test("shouldServeMenuJsonFromApiMenu", async (t) => {
 
   assert.equal(response.status, 200);
   assert.equal((await response.json()).pages[0].name, "커피");
+});
+
+test("shouldRespondEventStreamHeadersOnEvents", async (t) => {
+  const hub = { add: t.mock.fn() };
+  const baseUrl = await startServer(t, createApp({ getMenu: () => ({ pages: [] }), hub }));
+  const controller = new AbortController();
+
+  const response = await fetch(`${baseUrl}/events`, { signal: controller.signal });
+  controller.abort();
+
+  assert.match(response.headers.get("content-type"), /^text\/event-stream/);
+  assert.equal(response.headers.get("cache-control"), "no-cache");
 });
