@@ -14,6 +14,10 @@ function isMenuSheet(name) {
   return !name.startsWith(HIDDEN_SHEET_PREFIX);
 }
 
+function hasMenuName(row) {
+  return Boolean(row[MENU_COLUMNS.name]);
+}
+
 function toMenuItem(row) {
   return {
     name: row[MENU_COLUMNS.name],
@@ -24,13 +28,15 @@ function toMenuItem(row) {
   };
 }
 
+function parseMenuSheet(sheet) {
+  return XLSX.utils.sheet_to_json(sheet).filter(hasMenuName).map(toMenuItem);
+}
+
 export function parseWorkbook(workbook) {
   return {
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
-      items: XLSX.utils.sheet_to_json(workbook.Sheets[name])
-        .filter((row) => row[MENU_COLUMNS.name])
-        .map(toMenuItem),
+      items: parseMenuSheet(workbook.Sheets[name]),
     })),
   };
 }
