@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 const HIDDEN_SHEET_PREFIX = "_";
 const SOLD_OUT_MARK = "Y";
 const SETTINGS_SHEET = "_설정";
+const MANUAL_ADVANCE_SEC = 0;
 
 const MENU_COLUMNS = {
   name: "메뉴명",
@@ -51,6 +52,7 @@ function parseMenuSheet(sheet) {
 }
 
 function readSettings(sheet) {
+  if (!sheet) return {};
   return Object.fromEntries(
     XLSX.utils.sheet_to_json(sheet).map((row) => [row[SETTINGS_COLUMNS.key], row[SETTINGS_COLUMNS.value]]),
   );
@@ -61,7 +63,7 @@ export function parseWorkbook(workbook, { defaultTheme } = {}) {
   return {
     storeName: settings[SETTING_KEYS.storeName] ?? "",
     theme: settings[SETTING_KEYS.theme] ?? defaultTheme,
-    autoAdvanceSec: settings[SETTING_KEYS.autoAdvanceSec] ?? 0,
+    autoAdvanceSec: settings[SETTING_KEYS.autoAdvanceSec] ?? MANUAL_ADVANCE_SEC,
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
       items: parseMenuSheet(workbook.Sheets[name]),

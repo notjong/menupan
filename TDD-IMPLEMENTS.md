@@ -198,14 +198,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T13 `_설정` 시트가 없으면 기본값을 쓴다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldUseDefaultsWhenSettingsSheetMissing`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 시트 `커피`만 있음, 옵션 `{ themes: ["cream", "beige"], defaultTheme: "beige" }` → `{ storeName: "", theme: "beige", autoAdvanceSec: 0 }`
 - Red 기대 실패: `TypeError` 또는 `AssertionError` (`_설정`이 있다고 가정한 코드)
 - Red 기록: `AssertionError: actual { storeName: undefined, theme: undefined, autoAdvanceSec: undefined }, expected { storeName: '', theme: 'beige', autoAdvanceSec: 0 }`
 - Green 기록: Obvious Implementation. `?? ""`, `?? defaultTheme`, `?? 0`. `parseWorkbook(workbook, { defaultTheme } = {})` 옵션 추가. 정리 거리: 매직 넘버 `0`(수동 전환), `_설정`이 없을 때 `sheet_to_json(undefined)`가 빈 배열을 돌려주는 데 숨어 기댐.
-- Refactor 기록:
+- Refactor 기록: (1) 숨은 의존 드러내기: `readSettings`에 시트 없음 가드(`if (!sheet) return {}`). 결과는 이전과 같다(`{}`). (2) Introduce Constant `MANUAL_ADVANCE_SEC`. 단계마다 `npm test` 통과. 남은 하드코딩 없음.
 
 ### T14 자동전환초가 음수거나 글자면 0으로 본다
 
