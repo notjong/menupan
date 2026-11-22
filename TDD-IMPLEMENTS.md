@@ -325,13 +325,13 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T22 `GET /api/menu`가 메뉴 JSON을 준다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/app.test.mjs` › `shouldServeMenuJsonFromApiMenu`
 - 대상: `src/app.mjs` › `createApp`
 - 주어진 상황 → 기대 결과: `getMenu`가 `{ pages: [{ name: "커피", items: [] }] }`를 반환 → `GET /api/menu` 응답 200, 본문 `pages[0].name === "커피"`
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/app.mjs` 없음)
-- Red 기록:
-- Green 기록:
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/app.mjs'`
+- Green 기록: Obvious Implementation. `express` ^5.3.0 설치, `GET /api/menu` → `res.json(getMenu())`. 미사용 매개변수는 `_req`. `hub`는 아직 받지 않음(T23). 남은 하드코딩 없음.
 - Refactor 기록:
 
 ### T23 `GET /events`가 SSE 연결을 연다
