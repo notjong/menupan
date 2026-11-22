@@ -164,3 +164,12 @@ test("shouldParseSampleDataMenuXlsx", () => {
 
   assert.deepEqual(menu.pages.map((page) => page.name), ["커피", "디저트", "음료"]);
 });
+
+test("shouldReadDeviceFromSettingsSheet", () => {
+  const workbook = makeWorkbook({
+    커피: [MENU_HEADER],
+    _설정: [SETTINGS_HEADER, ["디바이스", "mobile"]],
+  });
+
+  assert.equal(parseWorkbook(workbook, THEME_OPTIONS).device, "mobile");
+});

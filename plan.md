@@ -115,7 +115,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 
 ### 7.1 설정 읽기 — `src/parse-workbook.mjs`
 
-- [ ] **`_설정`의 디바이스를 읽는다** (`shouldReadDeviceFromSettingsSheet`)
+- [x] **`_설정`의 디바이스를 읽는다** (`shouldReadDeviceFromSettingsSheet`)
   - `디바이스 = mobile` → `device: "mobile"`
 - [ ] **모르는 디바이스는 기본 디바이스로 바꾼다** (`shouldFallBackToDefaultDeviceWhenUnknown`)
   - `디바이스 = tv` 또는 없음 → `device: "tablet-port"`

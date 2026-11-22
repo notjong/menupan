@@ -450,11 +450,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T31 `_설정`의 디바이스를 읽는다
 
-- 상태: TODO
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldReadDeviceFromSettingsSheet`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: `_설정`에 `디바이스 = mobile` → `menu.device === "mobile"`
 - Red 기대 실패: `AssertionError` (`device`가 `undefined`)
+- Red 기록: `AssertionError: undefined !== 'mobile'`
+- Green 기록: Obvious Implementation. `SETTING_KEYS.device = "디바이스"`를 더하고 값을 그대로 `device`로 낸다. 남은 하드코딩: 검증 없음 — T32에서 풀림.
+- Refactor 기록: 변경 없음. 다른 설정과 같은 모양이고 중복·매직 값 없음.
 
 ### T32 모르는 디바이스는 기본 디바이스로 바꾼다
 

@@ -19,6 +19,7 @@ const SETTING_KEYS = {
   storeName: "매장명",
   theme: "테마",
   autoAdvanceSec: "자동전환초",
+  device: "디바이스",
 };
 
 function isMenuSheet(name) {
@@ -72,6 +73,7 @@ export function parseWorkbook(workbook, { themes = [], defaultTheme } = {}) {
     storeName: settings[SETTING_KEYS.storeName] ?? "",
     theme: toTheme(settings[SETTING_KEYS.theme], { themes, defaultTheme }),
     autoAdvanceSec: toAutoAdvanceSec(settings[SETTING_KEYS.autoAdvanceSec]),
+    device: settings[SETTING_KEYS.device],
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
       items: parseMenuSheet(workbook.Sheets[name]),
