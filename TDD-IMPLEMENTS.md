@@ -358,14 +358,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T25 읽기에 실패하면 브라우저에 알리지 않는다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/reloader.test.mjs` › `shouldNotBroadcastWhenParseFails`
 - 대상: `src/reloader.mjs` › `createReloader`
 - 주어진 상황 → 기대 결과: 정상 `reload()` 1번 → `hub.broadcast` 1번. 이어서 실패하는 `reload()` 1번 → `hub.broadcast`는 여전히 1번
 - Red 기대 실패: `AssertionError` (실패해도 broadcast함). 앞 항목 구현이 이미 막고 있으면 바로 통과할 수 있다. 그때는 멈추고 사용자에게 확인한다.
 - Red 기록: `AssertionError: actual 0, expected 1`. 기대했던 '실패해도 broadcast'가 아니라, T24가 broadcast를 아예 안 해서 첫 단언에서 실패. 바로 통과할 위험은 T24를 최소로 구현해 피했다.
 - Green 기록: Obvious Implementation. `try` 안에서 메뉴를 바꾼 다음 줄에 `hub.broadcast("menu-updated", {})`. 파싱이 던지면 그 줄에 닿지 않는다. 남은 하드코딩: 이벤트 이름 문자열 `"menu-updated"`.
-- Refactor 기록:
+- Refactor 기록: Introduce Constant `MENU_UPDATED_EVENT`(`src/sse-hub.mjs`에서 export, reloader가 import). 테스트는 프로토콜 값을 확인하므로 문자열 그대로 둔다. `npm test` 통과. 남은 하드코딩 없음.
 
 ### T26 Excel 임시 잠금 파일은 무시한다
 

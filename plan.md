@@ -91,7 +91,7 @@ Excel은 한 번 저장할 때 파일 이벤트를 여러 번 낸다. 이를 300
   - 응답 헤더 `Content-Type: text/event-stream`
 - [x] **Excel을 읽다 실패하면 직전 메뉴를 그대로 보여준다** (`shouldKeepPreviousDataWhenParseFails`)
   - 저장 도중 깨진 파일 → `/api/menu`는 이전 정상 데이터
-- [ ] **읽기에 실패하면 브라우저에 알리지 않는다** (`shouldNotBroadcastWhenParseFails`)
+- [x] **읽기에 실패하면 브라우저에 알리지 않는다** (`shouldNotBroadcastWhenParseFails`)
   - 깨진 파일 → 갱신 신호 0번 (화면 깜빡임 방지)
 - [ ] **Excel 임시 잠금 파일은 무시한다** (`shouldIgnoreExcelLockFiles`)
   - `~$menu.xlsx` 생성 → 아무 일도 없음

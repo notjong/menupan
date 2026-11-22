@@ -1,3 +1,5 @@
+export const MENU_UPDATED_EVENT = "menu-updated";
+
 export function formatSseEvent(name, data) {
   return `event: ${name}\ndata: ${JSON.stringify(data)}\n\n`;
 }
