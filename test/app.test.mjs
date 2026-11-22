@@ -49,3 +49,22 @@ test("shouldRejectAdminSettingsWithoutSession", async (t) => {
 
   assert.equal(response.status, 401);
 });
+
+function postJson(url, body, headers = {}) {
+  return fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...headers },
+    body: JSON.stringify(body),
+  });
+}
+
+test("shouldLoginAndSetSessionCookie", async (t) => {
+  const baseUrl = await startServer(t, createAdminApp());
+
+  const ok = await postJson(`${baseUrl}/api/admin/login`, { username: "admin", password: "1234" });
+  const wrong = await postJson(`${baseUrl}/api/admin/login`, { username: "admin", password: "0000" });
+
+  assert.equal(ok.status, 200);
+  assert.match(ok.headers.get("set-cookie"), /HttpOnly/i);
+  assert.equal(wrong.status, 401);
+});
