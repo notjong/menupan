@@ -85,7 +85,7 @@ Excel은 한 번 저장할 때 파일 이벤트를 여러 번 낸다. 이를 300
 
 위 부품을 연결했을 때의 동작을 확인한다.
 
-- [ ] **`GET /api/menu`가 메뉴 JSON을 준다** (`shouldServeMenuJsonFromApiMenu`)
+- [x] **`GET /api/menu`가 메뉴 JSON을 준다** (`shouldServeMenuJsonFromApiMenu`)
   - 요청 → 200, `pages` 배열 포함
 - [ ] **`GET /events`가 SSE 연결을 연다** (`shouldRespondEventStreamHeadersOnEvents`)
   - 응답 헤더 `Content-Type: text/event-stream`
