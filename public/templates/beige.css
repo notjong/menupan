@@ -1,0 +1,16 @@
+/* beige — 색은 docs/TRD.md 6절, surface는 bg PNG의 평균색(PNG를 받기 전 잠깐 보이는 바탕). */
+:root {
+  --text: #352a1a;
+  --sub: #827049;
+  --accent: #7a8246;
+  --surface: #d3c4a6;
+
+  --bg-mobile: url("/assets/beige/bg-mobile.png");
+  --bg-tablet-port: url("/assets/beige/bg-tablet-port.png");
+  --bg-tablet-land: url("/assets/beige/bg-tablet-land.png");
+  --bg-signage: url("/assets/beige/bg-signage.png");
+  --frame-mobile: url("/assets/beige/frame-mobile.png");
+  --frame-tablet-port: url("/assets/beige/frame-tablet-port.png");
+  --frame-tablet-land: url("/assets/beige/frame-tablet-land.png");
+  --frame-signage: url("/assets/beige/frame-signage.png");
+}

@@ -1,0 +1,622 @@
+# TDD-IMPLEMENTS.md — TDD 진행표
+
+`plan.md`의 테스트를 실행 순서대로 하나씩 쪼갠 진행표다. 각 항목은 Kent Beck TDD 사이클 한 바퀴다.
+
+```text
+TODO ──/tdd-red──▶ RED ──/tdd-green──▶ GREEN ──/tdd-refactor──▶ DONE
+       실패 테스트 1개      최소 구현 + 커밋         구조 개선 + 커밋
+                           [BEHAVIORAL]            [STRUCTURAL]
+```
+
+## 규칙
+
+- 한 번에 한 항목만 진행한다. `RED` 또는 `GREEN` 항목이 있으면 다음 항목을 시작하지 않는다.
+- 위에서부터 순서대로 진행한다. 뒤 항목은 앞 항목의 코드를 전제로 한다.
+- 명령어가 `상태`와 `기록` 칸을 갱신한다. 손으로 고칠 때도 같은 형식을 지킨다.
+- `DONE`이 되면 `plan.md`의 같은 테스트도 `[x]`로 바꾼다.
+- 테스트 실행: 전체 `npm test`, 하나 `node --test --test-name-pattern="<테스트 이름>" <테스트 파일>`
+
+## 항목 양식
+
+```text
+### Txx 한 줄 설명
+- 상태: TODO | RED | GREEN | DONE
+- 테스트: <테스트 파일> › <테스트 이름>
+- 대상: <제품 코드 파일> › <함수>
+- 주어진 상황 → 기대 결과
+- Red 기대 실패: Red 단계에서 나와야 할 실패
+- Red 기록 / Green 기록 / Refactor 기록: 명령어가 채운다
+```
+
+---
+
+## T00 프로젝트 준비 (구조적 준비, 테스트 없음)
+
+- 상태: DONE
+- 내용: `/tdd-red`가 처음 실행될 때 `package.json`이 없으면 만든다.
+  - `"type": "module"`
+  - `"scripts": { "start": "node server.mjs", "test": "node --test" }`
+  - 의존성은 넣지 않는다. 처음 필요한 항목에서 설치한다.
+- 커밋: `chore: package.json 추가` / `[STRUCTURAL] T00`
+- 기록: `package.json` 생성(의존성 없음). `npm test` → `tests 0`, exit 0. 테스트 없는 항목이라 RED/GREEN을 건너뛰고 DONE.
+
+---
+
+## 1. 가격 표시
+
+### T01 가격에 콤마와 "원"을 붙인다
+
+- 상태: DONE
+- 테스트: `test/format.test.mjs` › `shouldFormatPriceWithCommaAndWon`
+- 대상: `public/format.mjs` (원래 `src/format.mjs`) › `formatPrice(price)`
+- 주어진 상황 → 기대 결과: `formatPrice(4500)` → `"4,500원"`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/format.mjs` 없음)
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/format.mjs' imported from .../test/format.test.mjs` (tests 1, fail 1)
+- Green 기록: Fake It. `formatPrice()`가 상수 `"4,500원"`을 반환한다. 남은 하드코딩: 반환값 `"4,500원"`(테스트 기대값과 중복). 미사용 경고(ts 6133)를 없애려고 매개변수 `price`를 뺐다. 일반화할 때 다시 넣는다.
+- Refactor 기록: 테스트와 코드 사이 중복(`4500` ↔ `"4,500원"`) 제거. (1) Introduce Parameter `price` + Substitute Algorithm(상수 → `Intl.NumberFormat("ko-KR")`, TRD 3.3절). 매개변수만 넣으면 미사용 경고가 다시 나서 두 단계를 한 번에 했다. (2) Extract Constant `KRW_NUMBER_FORMAT`, `PRICE_UNIT`. 단계마다 `npm test` 통과. 남은 하드코딩 없음.
+
+### T02 가격이 없으면 빈 문자열을 반환한다
+
+- 상태: DONE
+- 테스트: `test/format.test.mjs` › `shouldReturnEmptyStringWhenPriceIsNull`
+- 대상: `public/format.mjs` (원래 `src/format.mjs`) › `formatPrice(price)`
+- 주어진 상황 → 기대 결과: `formatPrice(null)` → `""`
+- Red 기대 실패: `AssertionError` (`"null원"` 같은 값이 나옴)
+- Red 기록: `AssertionError: actual '0원', expected ''` (Intl.NumberFormat이 null을 0으로 바꿈)
+- Green 기록: Obvious Implementation. `price === null`이면 `""` 반환(가드 절). 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 가드 절 한 줄이고 중복·매직 값 없음. 남은 하드코딩 없음.
+
+---
+
+## 2. Excel 읽기
+
+공통: 테스트는 `XLSX.utils.book_new()`, `XLSX.utils.aoa_to_sheet()`로 작은 워크북을 직접 만든다. T03의 Red 단계에서 `xlsx`를 설치한다.
+
+```bash
+npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
+```
+
+반환 형식은 `docs/TRD.md` 3.1절의 `MenuData`를 따른다.
+
+### 2-1. 시트 → 페이지
+
+### T03 시트 하나가 메뉴판 페이지 하나가 된다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldTurnEachSheetIntoPage`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook(workbook)`
+- 주어진 상황 → 기대 결과: 시트 `커피`, `디저트` → `pages.length === 2`, `pages.map(p => p.name)` = `["커피", "디저트"]`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/parse-workbook.mjs` 없음)
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/parse-workbook.mjs'`. 테스트 픽스처용 `xlsx` 0.20.3(CDN) 설치.
+- Green 기록: Obvious Implementation. `workbook.SheetNames`를 `{ name }` 페이지로 매핑. 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 한 줄 매핑이고 중복·매직 값 없음.
+
+### T04 `_`로 시작하는 시트는 페이지에서 뺀다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldExcludeSheetsStartingWithUnderscore`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 시트 `커피`, `_설정` → 페이지 이름 `["커피"]`
+- Red 기대 실패: `AssertionError` (`_설정`이 페이지에 포함됨)
+- Red 기록: `AssertionError: actual ['커피', '_설정'], expected ['커피']`
+- Green 기록: Obvious Implementation. `name.startsWith("_")` 시트를 거른다. 남은 하드코딩: 매직 문자열 `"_"`.
+- Refactor 기록: (1) Introduce Constant `HIDDEN_SHEET_PREFIX` (2) Extract Function `isMenuSheet`. 단계마다 `npm test` 통과. 남은 하드코딩 없음.
+
+### T05 페이지 순서는 Excel 탭 순서를 따른다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldKeepWorkbookSheetOrder`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 탭 순서 `음료`, `커피` → 페이지 이름 `["음료", "커피"]`
+- Red 기대 실패: `AssertionError`. 앞 항목 구현이 이미 순서를 지키면 바로 통과할 수 있다. 그때는 `/tdd-red` 규칙대로 멈추고 사용자에게 확인한다.
+- Red 기록: Red 실패 없음: 첫 실행에서 통과. T03 구현이 `SheetNames` 순서를 그대로 쓴다. 테스트는 회귀 테스트로 유지.
+- Green 기록: 구현 없음(이미 통과).
+- Refactor 기록: 변경 없음. 제품 코드를 건드리지 않았다.
+
+### 2-2. 행 → 메뉴 항목
+
+### T06 각 열이 메뉴 항목의 값이 된다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldMapColumnsToItemFields`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 헤더 `메뉴명 | 가격 | 설명 | 품절 | 카테고리`, 행 `아메리카노 | 4500 | 깔끔한 산미 | (빈칸) | 에스프레소` → `pages[0].items[0]` = `{ name: "아메리카노", price: 4500, desc: "깔끔한 산미", soldOut: false, category: "에스프레소" }`
+- Red 기대 실패: `AssertionError` (`items`가 없거나 비어 있음)
+- Red 기록: `TypeError: Cannot read properties of undefined (reading '0')` (`items` 없음)
+- Green 기록: Obvious Implementation(`XLSX.utils.sheet_to_json`로 행 → 객체) + Fake It(`soldOut: false` 고정). 남은 하드코딩: `soldOut: false`(T08에서 풀림), 열 이름 문자열 5개가 매핑 안에 흩어짐.
+- Refactor 기록: (1) Extract Function `toMenuItem` (2) Introduce Constant `MENU_COLUMNS`(열 이름 한곳에 모음). 단계마다 `npm test` 통과. 남은 하드코딩: `soldOut: false` — 일반화할 테스트가 아직 없어 남김, T08에서 풀림.
+
+### T07 메뉴명이 빈 행은 건너뛴다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldSkipRowsWithEmptyName`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 행 `아메리카노`, (메뉴명 빈 행), `라떼` → `items.map(i => i.name)` = `["아메리카노", "라떼"]`
+- Red 기대 실패: `AssertionError` (빈 항목이 섞임)
+- Red 기록: `AssertionError: actual ['아메리카노', '', '라떼'], expected ['아메리카노', '라떼']`
+- Green 기록: Obvious Implementation. 메뉴명이 falsy인 행을 `filter`로 거른다. 남은 하드코딩 없음. 정리 거리: 익명 조건식, `parseWorkbook` 안 중첩 파이프라인.
+- Refactor 기록: (1) Extract Function `hasMenuName` (2) Extract Function `parseMenuSheet`. 단계마다 `npm test` 통과. 남은 하드코딩: `soldOut: false` — T08에서 풀림.
+
+### T08 품절 칸이 `Y`면 품절로 표시한다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldMarkItemSoldOutWhenColumnIsY`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 품절 `Y` → `soldOut: true` / 품절 빈칸 → `soldOut: false`
+- Red 기대 실패: `AssertionError` (T06의 Fake It으로 `soldOut`이 늘 `false`)
+- Red 기록: `AssertionError: actual false, expected true` (T06의 Fake It `soldOut: false`)
+- Green 기록: Obvious Implementation. `row[품절] === "Y"`. Fake It `soldOut: false` 제거. 남은 하드코딩: 매직 문자열 `"Y"`.
+- Refactor 기록: Introduce Constant `SOLD_OUT_MARK`. `npm test` 통과. 남은 하드코딩 없음.
+
+### T09 품절 칸의 소문자·공백도 `Y`로 인정한다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldTreatLowercaseAndPaddedYAsSoldOut`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 품절 `y` → `true`, 품절 `" Y "` → `true`
+- Red 기대 실패: `AssertionError` (`false`가 나옴)
+- Red 기록: `AssertionError: actual [false, false], expected [true, true]`
+- Green 기록: Obvious Implementation. 값을 문자열로 바꾼 뒤 `trim()` + `toUpperCase()` 후 비교. 남은 하드코딩 없음. 정리 거리: `toMenuItem` 안의 긴 정규화 식.
+- Refactor 기록: Extract Function `isSoldOutMark`. `npm test` 통과. 남은 하드코딩 없음.
+
+### T10 가격이 숫자가 아니면 `null`로 둔다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldSetPriceNullWhenNotNumeric`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 가격 `"시가"` → `price: null`, 가격 `"4,500원"` → `price: null`
+- Red 기대 실패: `AssertionError` (`"시가"`, `NaN` 등이 나옴)
+- Red 기록: `AssertionError: actual ['시가', '4,500원'], expected [null, null]`
+- Green 기록: Obvious Implementation. `Number.isFinite`가 아니면 `null`. 숫자 셀만 가격으로 인정한다(텍스트 `"4500"`은 변환하지 않음 — 테스트 범위 밖). 정리 거리: 같은 셀 접근 2번.
+- Refactor 기록: Extract Function `toPrice`(같은 셀 중복 접근 제거). `npm test` 통과. 남은 하드코딩 없음.
+
+### T11 카테고리가 빈칸이면 빈 문자열로 둔다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldDefaultCategoryToEmptyString`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 카테고리 빈칸 → `category: ""`
+- Red 기대 실패: `AssertionError` (`undefined`가 나옴)
+- Red 기록: `AssertionError: actual undefined, expected ''`
+- Green 기록: Obvious Implementation. `?? ""`. 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 연산자 하나라 추출할 것이 없다. 참고: `desc` 빈칸은 아직 `undefined`다. 빈 문자열로 맞추는 것은 행위 변경이라 리팩터링에서 하지 않았다(테스트 항목 없음).
+
+### 2-3. `_설정` 시트
+
+공통: 기본 테마가 아직 정해지지 않았다(`docs/TRD.md` 7절). 그래서 테마 관련 값은 인자로 받는다: `parseWorkbook(workbook, { themes, defaultTheme })`. 테스트가 값을 넘긴다.
+
+### T12 매장명·테마·자동전환초를 읽는다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldReadStoreNameThemeAndAutoAdvanceFromSettingsSheet`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `_설정` 시트(헤더 `항목 | 값`) 행 `매장명 | 빌런 커피`, `테마 | cream`, `자동전환초 | 5`, 옵션 `{ themes: ["cream", "beige"], defaultTheme: "beige" }` → `{ storeName: "빌런 커피", theme: "cream", autoAdvanceSec: 5 }`
+- Red 기대 실패: `AssertionError` (`storeName` 등이 없음)
+- Red 기록: `AssertionError: actual { storeName: undefined, theme: undefined, autoAdvanceSec: undefined }`
+- Green 기록: Obvious Implementation. `_설정` 시트를 `{항목: 값}` 맵으로 바꿔 세 값을 읽는다. 옵션 인자는 아직 쓰지 않아 받지 않았다(T13·T15에서 필요). 정리 거리: 시트 이름·열 이름·항목 이름 문자열 6개, `parseWorkbook` 안의 설정 읽기.
+- Refactor 기록: (1) Extract Function `readSettings` (2) Introduce Constant `SETTINGS_SHEET`, `SETTINGS_COLUMNS`, `SETTING_KEYS`. 단계마다 `npm test` 통과. 남은 하드코딩 없음.
+
+### T13 `_설정` 시트가 없으면 기본값을 쓴다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldUseDefaultsWhenSettingsSheetMissing`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: 시트 `커피`만 있음, 옵션 `{ themes: ["cream", "beige"], defaultTheme: "beige" }` → `{ storeName: "", theme: "beige", autoAdvanceSec: 0 }`
+- Red 기대 실패: `TypeError` 또는 `AssertionError` (`_설정`이 있다고 가정한 코드)
+- Red 기록: `AssertionError: actual { storeName: undefined, theme: undefined, autoAdvanceSec: undefined }, expected { storeName: '', theme: 'beige', autoAdvanceSec: 0 }`
+- Green 기록: Obvious Implementation. `?? ""`, `?? defaultTheme`, `?? 0`. `parseWorkbook(workbook, { defaultTheme } = {})` 옵션 추가. 정리 거리: 매직 넘버 `0`(수동 전환), `_설정`이 없을 때 `sheet_to_json(undefined)`가 빈 배열을 돌려주는 데 숨어 기댐.
+- Refactor 기록: (1) 숨은 의존 드러내기: `readSettings`에 시트 없음 가드(`if (!sheet) return {}`). 결과는 이전과 같다(`{}`). (2) Introduce Constant `MANUAL_ADVANCE_SEC`. 단계마다 `npm test` 통과. 남은 하드코딩 없음.
+
+### T14 자동전환초가 음수거나 글자면 0으로 본다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldClampNegativeAutoAdvanceToZero`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `자동전환초 | -3` → `autoAdvanceSec: 0`, `자동전환초 | 빠르게` → `autoAdvanceSec: 0`
+- Red 기대 실패: `AssertionError` (`-3`, `NaN`이 나옴)
+- Red 기록: `AssertionError: actual -3, expected 0`
+- Green 기록: Obvious Implementation. 유한한 양수만 쓰고 나머지는 `MANUAL_ADVANCE_SEC`. 정리 거리: 같은 설정값 접근 3번, `parseWorkbook` 안의 긴 조건식.
+- Refactor 기록: Extract Function `toAutoAdvanceSec`(설정값 중복 접근 3번 제거, `toPrice`와 같은 모양). `npm test` 통과. 남은 하드코딩 없음.
+
+### T15 없는 테마 이름이면 기본 테마로 바꾼다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldFallBackToDefaultThemeWhenUnknown`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `테마 | purple`, 옵션 `{ themes: ["cream", "beige"], defaultTheme: "beige" }` → `theme: "beige"`
+- Red 기대 실패: `AssertionError` (`"purple"`이 나옴)
+- Red 기록: `AssertionError: actual 'purple', expected 'beige'`
+- Green 기록: Obvious Implementation. `themes.includes(값)`이 아니면 `defaultTheme`. 옵션 `themes = []` 추가. 정리 거리: 같은 설정값 접근 2번.
+- Refactor 기록: Extract Function `toTheme`(설정값 중복 접근 제거, `toPrice`·`toAutoAdvanceSec`와 같은 모양). `npm test` 통과. 남은 하드코딩 없음.
+
+### 2-4. 실제 샘플 파일
+
+### T16 `data/menu.xlsx`를 읽으면 커피·디저트·음료 3페이지가 나온다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldParseSampleDataMenuXlsx`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook` (파일 읽기는 테스트에서 `XLSX.readFile`로 한다)
+- 주어진 상황 → 기대 결과: `data/menu.xlsx` → 페이지 이름 `["커피", "디저트", "음료"]`
+- 주의: Red 전에 실제 파일의 시트 이름을 먼저 확인한다. 다르면 기대값을 맞추기 전에 사용자에게 알린다.
+- Red 기대 실패: 앞 항목이 모두 끝났다면 바로 통과할 수 있다. 그때는 `/tdd-red` 규칙대로 멈추고 사용자에게 확인한다(이 항목은 회귀 점검용이다).
+- Red 기록: Red 실패 없음: 첫 실행에서 통과(예상한 회귀 점검). 실제 시트: `커피, 디저트, 음료, _설정`. ESM 빌드의 `XLSX.readFile`은 fs 연결이 없어 `XLSX.read(readFileSync(...))`로 읽는다. `_설정`에 문서에 없는 항목 `디바이스=tablet-port`, `영문태그=SPECIALTY COFFEE`가 있다(현재 무시됨).
+- Green 기록: 구현 없음(이미 통과).
+- Refactor 기록: 변경 없음. 제품 코드를 건드리지 않았다.
+
+---
+
+## 3. 저장 이벤트 합치기
+
+공통: 실제 시간을 기다리지 않는다. `node:test`의 `mock.timers`(`t.mock.timers.enable({ apis: ["setTimeout"] })`, `t.mock.timers.tick(ms)`)로 시간을 흘린다.
+
+### T17 300ms 안에 이벤트가 여러 번 와도 한 번만 처리한다
+
+- 상태: DONE
+- 테스트: `test/debounce.test.mjs` › `shouldCallOnceForBurstWithin300ms`
+- 대상: `src/debounce.mjs` › `debounce(fn, ms)`
+- 주어진 상황 → 기대 결과: `debounce(fn, 300)`을 0ms, 100ms, 200ms에 호출하고 500ms까지 흘림 → `fn` 호출 1번
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/debounce.mjs` 없음)
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/debounce.mjs'`
+- Green 기록: Fake It. 처음 호출에만 `setTimeout(fn, ms)`를 걸고 그 뒤 호출은 모두 무시한다. 남은 하드코딩: 한 번 걸리면 영원히 닫히는 `scheduled` 플래그(T18에서 풀림).
+- Refactor 기록: 변경 없음. Fake It의 `scheduled` 플래그는 테스트 하나로는 일반화할 근거가 없어 남긴다. T18이 삼각측량해서 풀 예정.
+
+### T18 조용한 시간이 지난 뒤 다시 오면 또 처리한다
+
+- 상태: DONE
+- 테스트: `test/debounce.test.mjs` › `shouldCallAgainAfterQuietPeriod`
+- 대상: `src/debounce.mjs` › `debounce`
+- 주어진 상황 → 기대 결과: 0ms 호출, 1000ms 호출, 1500ms까지 흘림 → `fn` 호출 2번
+- Red 기대 실패: `AssertionError` (한 번만 호출되는 가짜 구현)
+- Red 기록: `AssertionError: actual 1, expected 2` (T17 Fake It이 첫 호출 뒤 닫힘)
+- Green 기록: Obvious Implementation(표준 trailing debounce). 호출마다 `clearTimeout` 후 `setTimeout`을 다시 건다. T17의 Fake It(`scheduled` 플래그) 제거. 남은 하드코딩 없음.
+- Refactor 기록: 테스트 코드 Extract Function `setupDebounced`(가짜 타이머·mock fn·debounce 준비 중복 제거), Introduce Constant `QUIET_MS`. 기대값과 검사 범위는 그대로. `npm test` 통과. 제품 코드 변경 없음. 남은 하드코딩 없음.
+
+---
+
+## 4. 브라우저에 갱신 알림 보내기
+
+공통: 실제 HTTP 응답 대신 `write`, `on("close")`만 가진 가짜 응답 객체를 쓴다.
+
+### T19 신호를 SSE 형식으로 만든다
+
+- 상태: DONE
+- 테스트: `test/sse-hub.test.mjs` › `shouldFormatEventAsSseFrame`
+- 대상: `src/sse-hub.mjs` › `formatSseEvent(name, data)`
+- 주어진 상황 → 기대 결과: `formatSseEvent("menu-updated", {})` → `"event: menu-updated\ndata: {}\n\n"`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/sse-hub.mjs` 없음)
+- 순서 메모: `plan.md`에서는 4절 마지막이다. 아래 T20이 이 형식을 쓰므로 먼저 둔다.
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/sse-hub.mjs'`
+- Green 기록: Obvious Implementation. 템플릿 문자열 + `JSON.stringify(data)`. 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. SSE 표준 형식 한 줄이고 중복·매직 값 없음.
+
+### T20 연결된 모든 브라우저에 신호를 보낸다
+
+- 상태: DONE
+- 테스트: `test/sse-hub.test.mjs` › `shouldWriteEventToAllConnectedClients`
+- 대상: `src/sse-hub.mjs` › `createSseHub()` → `{ add(res), broadcast(name, data) }`
+- 주어진 상황 → 기대 결과: 가짜 응답 2개 `add` 후 `broadcast("menu-updated", {})` → 두 응답 모두 `write("event: menu-updated\ndata: {}\n\n")` 1번
+- Red 기대 실패: `SyntaxError`(export 없음) 또는 `TypeError` (`createSseHub` 없음)
+- Red 기록: `SyntaxError: The requested module '../src/sse-hub.mjs' does not provide an export named 'createSseHub'`. import 실패라 같은 파일의 T19 테스트도 이번 실행에서는 돌지 않았다(전체 19개 중 실패 1 = 파일 단위).
+- Green 기록: Obvious Implementation. `Set`에 응답을 모으고 `broadcast`가 모두에게 `write`. 닫힌 연결 제거는 넣지 않음(T21). 정리 거리: 클라이언트마다 같은 프레임을 다시 만든다.
+- Refactor 기록: Extract Variable `frame`(프레임을 한 번만 만든다). `npm test` 통과. 남은 하드코딩 없음.
+
+### T21 창을 닫은 브라우저는 목록에서 뺀다
+
+- 상태: DONE
+- 테스트: `test/sse-hub.test.mjs` › `shouldRemoveClientOnClose`
+- 대상: `src/sse-hub.mjs` › `createSseHub`
+- 주어진 상황 → 기대 결과: 응답 2개 `add`, 1개가 `close` 이벤트 발생, `broadcast` → 남은 1개만 `write` 받음
+- Red 기대 실패: `AssertionError` (닫힌 응답에도 `write`됨)
+- Red 기록: `AssertionError: actual 1, expected 0` (닫힌 응답에도 write됨)
+- Green 기록: Obvious Implementation. `add`에서 `res.on("close")`로 Set에서 지운다. 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 리스너 한 줄이고 중복·매직 값 없음. 테스트의 `fakeResponse`는 T20에서 이미 공유 중.
+
+---
+
+## 5. 서버 전체 흐름
+
+공통: `server.mjs`는 조립만 한다. 테스트할 수 있게 부품을 나눈다.
+
+- `src/app.mjs` › `createApp({ getMenu, hub })`: express 앱을 반환한다. `listen`하지 않는다.
+- `src/reloader.mjs` › `createReloader({ readWorkbook, parse, hub, log })`: 파일이 바뀌었을 때 실행할 `reload()`와 현재 데이터 `getMenu()`를 반환한다.
+- `src/watch-filter.mjs` › `shouldReload(path)`: 감시할 파일인지 판정한다.
+
+HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부른 뒤 닫는다. T22의 Green에서 `express`를 설치한다.
+
+### T22 `GET /api/menu`가 메뉴 JSON을 준다
+
+- 상태: DONE
+- 테스트: `test/app.test.mjs` › `shouldServeMenuJsonFromApiMenu`
+- 대상: `src/app.mjs` › `createApp`
+- 주어진 상황 → 기대 결과: `getMenu`가 `{ pages: [{ name: "커피", items: [] }] }`를 반환 → `GET /api/menu` 응답 200, 본문 `pages[0].name === "커피"`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/app.mjs` 없음)
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/app.mjs'`
+- Green 기록: Obvious Implementation. `express` ^5.3.0 설치, `GET /api/menu` → `res.json(getMenu())`. 미사용 매개변수는 `_req`. `hub`는 아직 받지 않음(T23). 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 라우트 한 줄이고 중복·매직 값 없음. 테스트 서버 시작·종료는 이미 `startServer`로 묶여 있다.
+
+### T23 `GET /events`가 SSE 연결을 연다
+
+- 상태: DONE
+- 테스트: `test/app.test.mjs` › `shouldRespondEventStreamHeadersOnEvents`
+- 대상: `src/app.mjs` › `createApp` (`hub.add(res)` 호출)
+- 주어진 상황 → 기대 결과: `GET /events` → 응답 헤더 `content-type`이 `text/event-stream`으로 시작, `cache-control: no-cache`. 헤더 확인 후 요청을 끊는다(`AbortController`).
+- Red 기대 실패: `AssertionError` (404)
+- Red 기록: `AssertionError: actual 'text/html; charset=utf-8'` (404 응답). 테스트 도우미 `startServer`의 정리에 `closeAllConnections()`를 넣었다(열린 SSE 연결 때문에 `close`가 끝나지 않는 것 방지).
+- Green 기록: Obvious Implementation. `/events`에서 SSE 헤더 설정 → `flushHeaders()` → `hub.add(res)`. 정리 거리: 라우트 안의 헤더 객체 리터럴.
+- Refactor 기록: Introduce Constant `SSE_HEADERS`. `npm test` 통과. 남은 하드코딩 없음.
+
+### T24 Excel을 읽다 실패하면 직전 메뉴를 유지한다
+
+- 상태: DONE
+- 테스트: `test/reloader.test.mjs` › `shouldKeepPreviousDataWhenParseFails`
+- 대상: `src/reloader.mjs` › `createReloader`
+- 주어진 상황 → 기대 결과: 첫 `reload()`는 정상 데이터 A, 두 번째 `reload()`에서 `readWorkbook`이 예외를 던짐 → `getMenu()`는 여전히 A, `log`가 1번 호출됨
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/reloader.mjs` 없음)
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/reloader.mjs'`
+- Green 기록: Obvious Implementation. `try`에서 읽기·파싱이 모두 성공할 때만 `menu`를 바꾸고, 실패하면 `log(error)`. `hub`는 아직 쓰지 않아 받지 않음(T25). 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. try/catch 하나이고 중복·매직 값 없음.
+
+### T25 읽기에 실패하면 브라우저에 알리지 않는다
+
+- 상태: DONE
+- 테스트: `test/reloader.test.mjs` › `shouldNotBroadcastWhenParseFails`
+- 대상: `src/reloader.mjs` › `createReloader`
+- 주어진 상황 → 기대 결과: 정상 `reload()` 1번 → `hub.broadcast` 1번. 이어서 실패하는 `reload()` 1번 → `hub.broadcast`는 여전히 1번
+- Red 기대 실패: `AssertionError` (실패해도 broadcast함). 앞 항목 구현이 이미 막고 있으면 바로 통과할 수 있다. 그때는 멈추고 사용자에게 확인한다.
+- Red 기록: `AssertionError: actual 0, expected 1`. 기대했던 '실패해도 broadcast'가 아니라, T24가 broadcast를 아예 안 해서 첫 단언에서 실패. 바로 통과할 위험은 T24를 최소로 구현해 피했다.
+- Green 기록: Obvious Implementation. `try` 안에서 메뉴를 바꾼 다음 줄에 `hub.broadcast("menu-updated", {})`. 파싱이 던지면 그 줄에 닿지 않는다. 남은 하드코딩: 이벤트 이름 문자열 `"menu-updated"`.
+- Refactor 기록: Introduce Constant `MENU_UPDATED_EVENT`(`src/sse-hub.mjs`에서 export, reloader가 import). 테스트는 프로토콜 값을 확인하므로 문자열 그대로 둔다. `npm test` 통과. 남은 하드코딩 없음.
+
+### T26 Excel 임시 잠금 파일은 무시한다
+
+- 상태: DONE
+- 테스트: `test/watch-filter.test.mjs` › `shouldIgnoreExcelLockFiles`
+- 대상: `src/watch-filter.mjs` › `shouldReload(path)`
+- 주어진 상황 → 기대 결과: `shouldReload("data/~$menu.xlsx")` → `false`, `shouldReload("data/menu.xlsx")` → `true`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/watch-filter.mjs` 없음)
+- 후속: 이 항목이 `DONE`이 되면 `server.mjs`에서 부품을 조립한다(chokidar 설치, `debounce` + `shouldReload` + `createReloader` + `createApp`). 조립은 새 행위가 없는 연결 작업이므로 별도 구조적 커밋으로 하고, `npm start`로 직접 확인한다.
+- 후속 기록: `server.mjs` 조립 완료(`chokidar` ^6.0.0 설치). `npm start` 확인: `/api/menu`가 커피 6·디저트 5·음료 4개 항목을 준다. `touch`와 Excel식 저장(삭제 후 이름 바꾸기) 모두 `/events`로 `event: menu-updated`가 1번 온다. `public/assets/`가 없어 테마 목록이 비어 있고, 그래서 `theme`이 응답에 없다(화면 작업에서 해결).
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/watch-filter.mjs'`
+- Green 기록: Obvious Implementation. 파일 이름(`basename`)이 `~$`로 시작하면 `false`. 남은 하드코딩: 매직 문자열 `"~$"`.
+- Refactor 기록: Introduce Constant `EXCEL_LOCK_FILE_PREFIX`. `npm test` 통과. 남은 하드코딩 없음.
+
+---
+
+## 6. 화면 계산
+
+공통: DOM 없이 테스트할 수 있게 계산만 `public/board-state.mjs`에 둔다. 브라우저의 `client.js`가 이 모듈을 import한다.
+
+### T27 같은 카테고리끼리 묶되 Excel 순서를 지킨다
+
+- 상태: DONE
+- 테스트: `test/board-state.test.mjs` › `shouldGroupItemsByCategoryInOrder`
+- 대상: `public/board-state.mjs` › `groupByCategory(items)`
+- 주어진 상황 → 기대 결과: 카테고리 순서 `에스프레소, 에스프레소, 브루잉` → `[{ category: "에스프레소", items: [2개] }, { category: "브루잉", items: [1개] }]`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`public/board-state.mjs` 없음)
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../public/board-state.mjs'`
+- Green 기록: Obvious Implementation. `Map`이 처음 나온 순서를 지키는 성질로 묶는다. `Map.groupBy`는 구형 사이니지 브라우저 지원이 불확실해 쓰지 않았다. 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 루프 하나이고 중복·매직 값 없음.
+
+### T28 메뉴가 갱신돼도 보던 페이지에 머문다
+
+- 상태: DONE
+- 테스트: `test/board-state.test.mjs` › `shouldKeepCurrentPageIndexAfterUpdate`
+- 대상: `public/board-state.mjs` › `resolvePageIndex(currentIndex, pageCount)`
+- 주어진 상황 → 기대 결과: `resolvePageIndex(1, 3)` → `1`
+- Red 기대 실패: `SyntaxError` (export `resolvePageIndex` 없음)
+- Red 기록: `SyntaxError: The requested module '../public/board-state.mjs' does not provide an export named 'resolvePageIndex'`
+- Green 기록: Fake It. 받은 `currentIndex`를 그대로 돌려준다. `pageCount`는 아직 안 써서 받지 않음(미사용 경고 방지). 남은 하드코딩: 범위 보정 없음 — T29에서 풀림.
+- Refactor 기록: 변경 없음. Fake It은 테스트 하나로는 일반화할 근거가 없어 남긴다. T29가 삼각측량해서 풀 예정.
+
+### T29 페이지가 줄면 마지막 페이지로 옮긴다
+
+- 상태: DONE
+- 테스트: `test/board-state.test.mjs` › `shouldClampPageIndexWhenPagesShrink`
+- 대상: `public/board-state.mjs` › `resolvePageIndex`
+- 주어진 상황 → 기대 결과: `resolvePageIndex(2, 2)` → `1`
+- Red 기대 실패: `AssertionError` (T28의 Fake It 또는 그대로 반환하는 구현이 `2`를 냄)
+- Red 기록: `AssertionError: actual 2, expected 1` (T28 Fake It이 그대로 반환)
+- Green 기록: Obvious Implementation. `Math.min(currentIndex, pageCount - 1)`. T28 Fake It 제거. 참고: `pageCount`가 0이면 `-1`이 나온다(테스트 항목 없음, 행위 변경이라 리팩터링에서 다루지 않음).
+- Refactor 기록: 변경 없음. 한 줄 계산이고 중복·매직 값 없음. 남은 하드코딩 없음. 미결: 페이지 0개일 때 `-1`.
+
+### T30 자동 전환은 마지막 다음에 처음으로 돌아간다
+
+- 상태: DONE
+- 테스트: `test/board-state.test.mjs` › `shouldComputeNextPageIndexCyclically`
+- 대상: `public/board-state.mjs` › `nextPageIndex(currentIndex, pageCount)`
+- 주어진 상황 → 기대 결과: `nextPageIndex(2, 3)` → `0`, `nextPageIndex(0, 3)` → `1`
+- Red 기대 실패: `SyntaxError` (export `nextPageIndex` 없음)
+- 후속: 이 항목이 `DONE`이 되면 `public/index.html`, `client.js`, 테마 CSS를 만든다. 화면 코드는 `docs/TRD.md` 5·6절과 `.claude/rules/anti-ai-slop.md`를 따른다. 브라우저에서 PRD 7절 인수 조건 6개를 직접 확인한다.
+- Red 기록: `SyntaxError: ... does not provide an export named 'nextPageIndex'`. import 실패라 같은 파일의 T27~T29 테스트도 이번 실행에서는 돌지 않았다(전체 27개로 집계).
+- Green 기록: Obvious Implementation. `(currentIndex + 1) % pageCount`. 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 나머지 연산 한 줄이고 중복·매직 값 없음.
+
+---
+
+## 7. 화면 (테스트 항목 없음, 브라우저 확인)
+
+- 구조 변경: `src/format.mjs` → `public/format.mjs`. 브라우저가 `formatPrice`를 import하려면 `public/`에 있어야 한다. `npm test` 30/30 통과.
+- 만든 것: `public/index.html`, `public/client.js`, `public/templates/board-grid.css`, 테마 CSS 4개(`light-olive`, `deep-green`, `cream`, `beige`), `public/assets/<위 4개>/`.
+- 테마: TRD 7절 1번 임시 규칙대로 `assets/<t>/`와 `templates/<t>.css`가 둘 다 있는 4종만 넣었다. `cafe-dark`, `bistro-light`, `forest-*`는 PNG가 `design/project/assets/`에 있지만 색 값이 없어 넣지 않았다. 색을 정하면 CSS를 하나 만들고 폴더를 복사하면 된다. 기본 테마는 여전히 미결이며 지금은 이름순 첫 번째(`beige`)다.
+- 디바이스: `board-grid.css`의 미디어쿼리만 판별한다. 가로 → `tablet-land`(2열), 세로 비율 ≤ 17/32 → `mobile`, ≤ 21/32 → `signage`, 그 외 `tablet-port`. 메뉴판은 그 디바이스 비율(예: 4:3)의 캔버스로 창 안에 맞춰 넣고 남는 곳은 바탕색으로 둔다. 크기 단위는 캔버스 짧은 변의 1%이고, 휴대폰에서 읽히도록 글자 최소 크기를 둔다.
+- 페이지 0개: `resolvePageIndex`가 `-1`을 내는 경우는 `client.js`가 빈 안내 문구로 처리한다(함수는 그대로).
+- 확인(headless Chrome + CDP, 2026-11-22): 4개 디바이스 모두 배경·테두리 PNG와 열 수가 맞다. Excel 수정 후 1초 안에 반영됨 — 가격 4,500→4,800원, 카페라떼 `품절=Y`, `시즌` 시트 추가로 탭 4개, 테마 `deep-green`→`cream`, `자동전환초=5`로 5초마다 커피→디저트→음료. 확인 뒤 `data/menu.xlsx`는 원본으로 되돌렸다(shasum 동일).
+
+---
+
+## 8. 어드민 설정
+
+공통: 어드민은 `_설정` 시트를 고치는 화면이다. 저장은 Excel 파일에 쓰고, 화면 갱신은 기존 감시 → SSE 흐름에 맡긴다. 디바이스는 이제 `_설정`의 값으로 정한다(창 비율로 고르지 않는다).
+
+### T31 `_설정`의 디바이스를 읽는다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldReadDeviceFromSettingsSheet`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `_설정`에 `디바이스 = mobile` → `menu.device === "mobile"`
+- Red 기대 실패: `AssertionError` (`device`가 `undefined`)
+- Red 기록: `AssertionError: undefined !== 'mobile'`
+- Green 기록: Obvious Implementation. `SETTING_KEYS.device = "디바이스"`를 더하고 값을 그대로 `device`로 낸다. 남은 하드코딩: 검증 없음 — T32에서 풀림.
+- Refactor 기록: 변경 없음. 다른 설정과 같은 모양이고 중복·매직 값 없음.
+
+### T32 모르는 디바이스는 기본 디바이스로 바꾼다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldFallBackToDefaultDeviceWhenUnknown`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `디바이스 = tv` → `"tablet-port"`, `_설정` 없음 → `"tablet-port"`
+- Red 기대 실패: `AssertionError` (`tv`가 그대로 나옴)
+- Red 기록: `AssertionError: 'tv' !== 'tablet-port'`
+- Green 기록: Obvious Implementation. 디바이스 4종 목록에 있으면 그대로, 아니면 `tablet-port`. 남은 하드코딩: 목록과 기본값이 식 안에 들어 있음.
+- Refactor 기록: (1) Move Constant: 디바이스 목록·기본값을 `src/devices.mjs`로(검증에서도 쓴다) (2) Extract Function `toDevice`(`toTheme`과 같은 모양). `npm test` 통과. 남은 하드코딩 없음.
+
+### T33 `_설정`의 영문태그를 읽는다
+
+- 상태: DONE
+- 테스트: `test/parse-workbook.test.mjs` › `shouldReadTaglineFromSettingsSheet`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `영문태그 = SPECIALTY COFFEE` → `tagline: "SPECIALTY COFFEE"`, 없으면 `""`
+- Red 기대 실패: `AssertionError` (`tagline`이 `undefined`)
+- Red 기록: `AssertionError: undefined !== 'SPECIALTY COFFEE'`
+- Green 기록: Obvious Implementation. `SETTING_KEYS.tagline = "영문태그"`, 없으면 `""`(매장명과 같은 규칙). 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 매장명과 같은 한 줄이고 중복·매직 값 없음.
+
+### T34 `_설정`의 값을 바꾸고 메뉴 시트는 건드리지 않는다
+
+- 상태: DONE
+- 테스트: `test/write-settings.test.mjs` › `shouldWriteSettingsIntoSettingsSheet`
+- 대상: `src/write-settings.mjs` › `writeSettings(workbook, settings)`
+- 주어진 상황 → 기대 결과: 테마 `beige`인 워크북에 `{ theme: "cream", ... }` 저장 → 다시 파싱하면 `theme: "cream"`, 커피 시트 항목 그대로
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/write-settings.mjs` 없음)
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/write-settings.mjs'`
+- Green 기록: Obvious Implementation. `_설정`을 행 배열로 읽어 항목이 같은 행의 값만 바꾸고 시트를 다시 만든다. 다른 시트는 건드리지 않는다. 남은 하드코딩: 시트 이름·항목 이름이 `parse-workbook.mjs`와 중복. 없는 행은 아직 안 만든다 — T35에서 풀림.
+- Refactor 기록: Move Constant: `SETTINGS_SHEET`, `SETTING_KEYS`를 `src/settings-sheet.mjs`로 옮겨 읽기·쓰기가 같은 이름을 쓴다. `npm test` 통과. 남은 하드코딩 없음.
+
+### T35 없는 설정 행과 `_설정` 시트는 새로 만든다
+
+- 상태: DONE
+- 테스트: `test/write-settings.test.mjs` › `shouldCreateSettingsSheetWhenMissing`
+- 대상: `src/write-settings.mjs` › `writeSettings`
+- 주어진 상황 → 기대 결과: `_설정` 없는 워크북에 저장 → `_설정` 시트가 마지막에 생기고 다시 파싱하면 저장한 값
+- Red 기대 실패: `TypeError` (없는 시트를 읽음)
+- Red 기록: `AssertionError: '커피' !== '_설정'` (기대한 TypeError가 아니었다: `sheet_to_json(undefined)`가 빈 배열을 내고, 시트가 SheetNames에 안 들어감)
+- Green 기록: Obvious Implementation. 시트가 없으면 머리행 `["항목", "값"]`부터 시작해 마지막에 붙인다. 없는 항목 행은 아래에 추가한다. 남은 하드코딩: 머리행 문자열이 `parse-workbook.mjs`의 `SETTINGS_COLUMNS`와 중복.
+- Refactor 기록: (1) Move Constant `SETTINGS_COLUMNS` → `src/settings-sheet.mjs`(머리행 중복 제거) (2) Extract Function `readRows`, `setValue` (3) Introduce Constant `KEY_CELL`, `VALUE_CELL`, `HEADER_ROW`. `npm test` 통과. 남은 하드코딩 없음.
+
+### T36 올바른 입력은 다듬어서 받는다
+
+- 상태: DONE
+- 테스트: `test/validate-settings.test.mjs` › `shouldAcceptValidSettings`
+- 대상: `src/validate-settings.mjs` › `validateSettings(input, { themes, devices })`
+- 주어진 상황 → 기대 결과: 매장명 `" 빌런 커피 "`, 자동전환초 `"5"` → `{ ok: true, settings: { storeName: "빌런 커피", autoAdvanceSec: 5, ... } }`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND`
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/validate-settings.mjs'`
+- Green 기록: Fake It에 가까운 최소 구현. 글자는 `trim()`, 자동전환초는 `Number()`. 항상 `ok: true`. 남은 하드코딩: 검증 없음 — T37·T38에서 풀림.
+- Refactor 기록: 변경 없음. 검증이 아직 없어 정리할 중복이 없다. 일반화는 T37·T38이 강제한다.
+
+### T37 모르는 테마·디바이스는 거절한다
+
+- 상태: DONE
+- 테스트: `test/validate-settings.test.mjs` › `shouldRejectUnknownThemeOrDevice`
+- 대상: `src/validate-settings.mjs` › `validateSettings`
+- 주어진 상황 → 기대 결과: 테마 `purple`, 디바이스 `tv` → `ok: false`, `errors`의 필드가 `["theme", "device"]`
+- Red 기대 실패: `AssertionError` (`ok: true`)
+- Red 기록: `AssertionError: true !== false`
+- Green 기록: Obvious Implementation. 테마·디바이스가 받은 목록에 없으면 `{ field, message }`를 모아 `ok: false`. 남은 하드코딩: 검사 두 줄이 같은 모양.
+- Refactor 기록: Extract Function `checkOneOf(field, value, options, message)`로 같은 모양의 검사 두 줄을 합친다. `npm test` 통과. 남은 하드코딩 없음.
+
+### T38 자동전환초는 0 이상 정수만 받는다
+
+- 상태: DONE
+- 테스트: `test/validate-settings.test.mjs` › `shouldRejectInvalidAutoAdvanceSec`
+- 대상: `src/validate-settings.mjs` › `validateSettings`
+- 주어진 상황 → 기대 결과: `-1`, `1.5`, `"빠르게"` → 모두 `ok: false`
+- Red 기대 실패: `AssertionError`
+- Red 기록: `AssertionError: [true, true, true]` 기대 `[false, false, false]`
+- Green 기록: Obvious Implementation. `Number()`로 바꾼 값이 정수이고 0 이상일 때만 받는다. 남은 하드코딩 없음. 참고: 빈 문자열은 `Number("") = 0`이라 수동 전환으로 받는다.
+- Refactor 기록: Extract Function `checkNonNegativeInteger`. 세 검사가 모두 `[] | [오류]`를 내는 같은 모양이 되어 배열 하나로 모은다. `npm test` 통과. 남은 하드코딩 없음. 미결: 매장명·영문태그가 아예 없으면 `String(undefined)`로 "undefined"가 된다(테스트 항목 없음, 어드민 화면은 항상 보낸다).
+
+### T39 맞는 계정에만 세션을 준다
+
+- 상태: DONE
+- 테스트: `test/admin-auth.test.mjs` › `shouldIssueSessionOnlyForCorrectCredentials`
+- 대상: `src/admin-auth.mjs` › `createAdminAuth({ username, password })`
+- 주어진 상황 → 기대 결과: `login("admin", "1234")` → 토큰, `isValid(토큰) === true`. `login("admin", "0000")` → `null`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND`
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/admin-auth.mjs'`
+- Green 기록: Obvious Implementation. 계정이 맞으면 `randomUUID()` 토큰을 메모리 `Set`에 넣어 돌려준다. 남은 정리 거리: 문자열을 `!==`로 비교한다(응답 시간으로 비밀번호를 추측할 여지).
+- Refactor 기록: Extract Function `sameSecret`: SHA-256 해시를 `timingSafeEqual`로 비교한다. 아이디·비밀번호를 둘 다 비교한 뒤 판단해 어느 쪽이 틀렸는지 시간으로 드러나지 않는다. 결과는 같다. `npm test` 통과.
+
+### T40 세션 없이 설정 API를 부르면 401
+
+- 상태: DONE
+- 테스트: `test/app.test.mjs` › `shouldRejectAdminSettingsWithoutSession`
+- 대상: `src/app.mjs` › `createApp`
+- 주어진 상황 → 기대 결과: 쿠키 없이 `GET /api/admin/settings` → 401
+- Red 기대 실패: `AssertionError` (404)
+- Red 기록: `AssertionError: 404 !== 401`
+- Green 기록: Fake It. `GET /api/admin/settings`가 항상 401. 남은 하드코딩: 세션 확인 없음 — T42에서 풀림.
+- Refactor 기록: 변경 없음. Fake It 한 줄이라 일반화 근거가 아직 없다(T42가 삼각측량).
+
+### T41 로그인하면 HttpOnly 세션 쿠키를 준다
+
+- 상태: DONE
+- 테스트: `test/app.test.mjs` › `shouldLoginAndSetSessionCookie`
+- 대상: `src/app.mjs` › `POST /api/admin/login`
+- 주어진 상황 → 기대 결과: 맞는 계정 → 200, `Set-Cookie`에 `HttpOnly`. 틀린 계정 → 401
+- Red 기대 실패: `AssertionError` (404)
+- Red 기록: `AssertionError: 404 !== 200`
+- Green 기록: Obvious Implementation. `POST /api/admin/login`이 `auth.login`으로 토큰을 받아 `admin_session` 쿠키(HttpOnly, SameSite=Strict)로 준다. 틀리면 401. 남은 하드코딩: 쿠키 이름 문자열.
+- Refactor 기록: Introduce Constant `SESSION_COOKIE`, `SESSION_COOKIE_OPTIONS`. 세션 확인(T42)과 로그아웃(T45)이 같은 이름을 쓴다. `npm test` 통과.
+
+### T42 세션이 있으면 현재 설정과 선택지를 준다
+
+- 상태: DONE
+- 테스트: `test/app.test.mjs` › `shouldReturnCurrentSettingsAndOptions`
+- 대상: `src/app.mjs` › `GET /api/admin/settings`
+- 주어진 상황 → 기대 결과: 로그인 쿠키로 요청 → 200, `{ settings: { storeName, tagline, theme, device, autoAdvanceSec }, themes, devices }`
+- Red 기대 실패: `AssertionError` (401 또는 본문 없음)
+- Red 기록: `AssertionError: 401 !== 200` (T40의 Fake It)
+- Green 기록: Obvious Implementation. `Cookie` 머리를 직접 나눠(`readCookie`) 세션을 확인하고, 현재 메뉴에서 설정 5개를 골라 `getThemes()`, `DEVICES`와 함께 낸다. T40의 Fake It 제거. 남은 정리 거리: 세션 확인이 라우트 안에 있어 저장·로그아웃에서 반복될 예정.
+- Refactor 기록: Extract Function(미들웨어) `requireSession`. 저장(T43)·로그아웃(T45)에서 그대로 쓴다. `npm test` 통과. 남은 하드코딩 없음.
+
+### T43 올바른 설정을 저장한다
+
+- 상태: DONE
+- 테스트: `test/app.test.mjs` › `shouldSaveValidSettingsWithSession`
+- 대상: `src/app.mjs` › `PUT /api/admin/settings`
+- 주어진 상황 → 기대 결과: 로그인 쿠키 + 올바른 JSON → 204, `saveSettings`가 검증된 값으로 1번 불림
+- Red 기대 실패: `AssertionError` (404)
+- Red 기록: `AssertionError: 404 !== 204`
+- Green 기록: Obvious Implementation. 세션 확인 → `validateSettings` → `saveSettings(result.settings)` → 204. 남은 하드코딩: 검증 실패를 보지 않는다 — T44에서 풀림.
+- Refactor 기록: 변경 없음. 라우트 세 줄이고 검증·저장은 이미 각 모듈에 있다.
+
+### T44 잘못된 설정은 400이고 저장하지 않는다
+
+- 상태: DONE
+- 테스트: `test/app.test.mjs` › `shouldRejectInvalidSettingsWith400`
+- 대상: `src/app.mjs` › `PUT /api/admin/settings`
+- 주어진 상황 → 기대 결과: 테마 `purple` → 400, 본문 `errors`, `saveSettings` 0번
+- Red 기대 실패: `AssertionError` (204)
+- Red 기록: `AssertionError: 204 !== 400`
+- Green 기록: Obvious Implementation. 검증 실패면 `400 { errors }`로 끝내고 저장하지 않는다. 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 가드 한 줄이고 중복·매직 값 없음.
+
+### T45 로그아웃하면 세션이 끊긴다
+
+- 상태: DONE
+- 테스트: `test/app.test.mjs` › `shouldEndSessionOnLogout`
+- 대상: `src/app.mjs` › `POST /api/admin/logout`
+- 주어진 상황 → 기대 결과: 로그아웃 뒤 같은 쿠키로 `GET /api/admin/settings` → 401
+- Red 기대 실패: `AssertionError` (404 또는 200)
+- Red 기록: `AssertionError: 200 !== 401` (로그아웃 라우트가 없어 세션이 남음)
+- Green 기록: Obvious Implementation. `auth.logout(token)`이 메모리 세션을 지우고, 라우트가 쿠키도 지운 뒤 204. 남은 하드코딩 없음.
+- Refactor 기록: (1) Extract Function `createAdminRouter`(`express.Router`): 어드민 라우트 4개와 `requireSession`을 `/api/admin` 아래로 모은다 (2) Extract Function `pickSettings`. `npm test` 통과. 남은 하드코딩 없음.
+
+### 8.x 화면 연결 (테스트 항목 없음, 브라우저 확인)
+
+- `server.mjs`: `createAdminAuth(ADMIN_ACCOUNT)`, `getThemes: listThemes`, `saveSettings`(읽기 → `writeSettings` → 옆 파일에 쓰고 이름 바꾸기) 조립. `GET /admin` → `public/admin.html`.
+- `public/client.js`: `menu.device`를 `<html data-device>`로, `menu.tagline`을 매장명 위에 표시. `?preview`일 때만 같은 출처 `postMessage`로 저장 전 값을 덮어쓴다.
+- `public/templates/board-grid.css`: 디바이스 미디어쿼리를 `:root[data-device]` 선택자로 바꿈.
+- `public/admin.html`·`admin.css`·`admin.js`: 로그인, 테마·디바이스 버튼, `_설정` 입력, 축소 미리보기, 저장·로그아웃.
+- 확인(headless Chrome, 2026-11-22, 임시 3100 포트): 틀린 비밀번호 → 안내 문구. 로그인 → 테마 Cream·디바이스 사이니지·매장명 변경 시 미리보기만 바뀌고 열린 `/`는 그대로. 저장 → 약 1.2초 안에 열린 `/`가 `signage`·`cream`·새 매장명으로 바뀜(SSE). 콘솔 오류 없음. 확인 뒤 `data/menu.xlsx`는 원본으로 되돌림(shasum 동일).

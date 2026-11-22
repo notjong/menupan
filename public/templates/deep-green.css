@@ -1,0 +1,16 @@
+/* deep-green — 색은 docs/TRD.md 6절, surface는 bg PNG의 평균색(PNG를 받기 전 잠깐 보이는 바탕). */
+:root {
+  --text: #f0ecd8;
+  --sub: #a9bcab;
+  --accent: #c8a24a;
+  --surface: #1d3624;
+
+  --bg-mobile: url("/assets/deep-green/bg-mobile.png");
+  --bg-tablet-port: url("/assets/deep-green/bg-tablet-port.png");
+  --bg-tablet-land: url("/assets/deep-green/bg-tablet-land.png");
+  --bg-signage: url("/assets/deep-green/bg-signage.png");
+  --frame-mobile: url("/assets/deep-green/frame-mobile.png");
+  --frame-tablet-port: url("/assets/deep-green/frame-tablet-port.png");
+  --frame-tablet-land: url("/assets/deep-green/frame-tablet-land.png");
+  --frame-signage: url("/assets/deep-green/frame-signage.png");
+}

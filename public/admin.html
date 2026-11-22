@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>메뉴판 어드민</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
+    />
+    <link rel="stylesheet" href="admin.css" />
+    <script type="module" src="admin.js"></script>
+  </head>
+  <body>
+    <!-- 로그인 -->
+    <main class="login" id="login-view" hidden>
+      <form class="login-card" id="login-form">
+        <p class="eyebrow">Excel-Driven Menu Board</p>
+        <h1 class="title">어드민 로그인</h1>
+        <label class="field">
+          <span class="field-label">아이디</span>
+          <input name="username" autocomplete="username" required />
+        </label>
+        <label class="field">
+          <span class="field-label">비밀번호</span>
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <p class="message is-error" id="login-error" role="alert" hidden></p>
+        <button class="button is-primary" type="submit">로그인</button>
+      </form>
+    </main>
+
+    <!-- 설정 -->
+    <main class="admin" id="admin-view" hidden>
+      <header class="admin-head">
+        <div>
+          <p class="eyebrow">Excel-Driven Menu Board · Template System</p>
+          <h1 class="title">카페 메뉴판 설정</h1>
+          <p class="lead">
+            저장하면 <strong>data/menu.xlsx의 _설정 시트</strong>에 쓰고, 열려 있는 메뉴판이 바로 바뀝니다.
+          </p>
+        </div>
+        <button class="button" id="logout" type="button">로그아웃</button>
+      </header>
+
+      <form class="controls" id="settings-form" novalidate>
+        <fieldset class="group">
+          <legend class="group-label">테마 (CSS · PNG 세트)</legend>
+          <div class="choices" id="theme-choices"></div>
+        </fieldset>
+
+        <fieldset class="group">
+          <legend class="group-label">디바이스</legend>
+          <div class="choices" id="device-choices"></div>
+        </fieldset>
+
+        <fieldset class="group">
+          <legend class="group-label">Excel _설정 시트</legend>
+          <div class="fields">
+            <label class="field">
+              <span class="field-label">매장명</span>
+              <input name="storeName" maxlength="40" />
+            </label>
+            <label class="field">
+              <span class="field-label">영문태그</span>
+              <input name="tagline" maxlength="40" />
+            </label>
+            <label class="field is-narrow">
+              <span class="field-label">자동전환초</span>
+              <input name="autoAdvanceSec" type="number" min="0" step="1" inputmode="numeric" />
+              <span class="field-hint">0이면 수동 전환</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="save-row">
+          <button class="button is-primary" id="save" type="submit">저장</button>
+          <p class="message" id="save-message" role="status"></p>
+        </div>
+      </form>
+
+      <section class="stage" id="stage" aria-label="메뉴판 미리보기">
+        <div class="stage-clip" id="stage-clip">
+          <iframe id="preview" title="메뉴판 미리보기" src="/?preview"></iframe>
+        </div>
+      </section>
+
+      <footer class="caption">
+        <div class="paths">
+          <code id="bg-path"></code>
+          <code id="frame-path"></code>
+        </div>
+        <span id="device-size"></span>
+      </footer>
+    </main>
+  </body>
+</html>
