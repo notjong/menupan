@@ -262,14 +262,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T18 조용한 시간이 지난 뒤 다시 오면 또 처리한다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/debounce.test.mjs` › `shouldCallAgainAfterQuietPeriod`
 - 대상: `src/debounce.mjs` › `debounce`
 - 주어진 상황 → 기대 결과: 0ms 호출, 1000ms 호출, 1500ms까지 흘림 → `fn` 호출 2번
 - Red 기대 실패: `AssertionError` (한 번만 호출되는 가짜 구현)
 - Red 기록: `AssertionError: actual 1, expected 2` (T17 Fake It이 첫 호출 뒤 닫힘)
 - Green 기록: Obvious Implementation(표준 trailing debounce). 호출마다 `clearTimeout` 후 `setTimeout`을 다시 건다. T17의 Fake It(`scheduled` 플래그) 제거. 남은 하드코딩 없음.
-- Refactor 기록:
+- Refactor 기록: 테스트 코드 Extract Function `setupDebounced`(가짜 타이머·mock fn·debounce 준비 중복 제거), Introduce Constant `QUIET_MS`. 기대값과 검사 범위는 그대로. `npm test` 통과. 제품 코드 변경 없음. 남은 하드코딩 없음.
 
 ---
 
