@@ -130,3 +130,11 @@ test("shouldReadStoreNameThemeAndAutoAdvanceFromSettingsSheet", () => {
 
   assert.deepEqual(settingsOf(menu), { storeName: "빌런 커피", theme: "cream", autoAdvanceSec: 5 });
 });
+
+test("shouldUseDefaultsWhenSettingsSheetMissing", () => {
+  const workbook = makeWorkbook({ 커피: [MENU_HEADER] });
+
+  const menu = parseWorkbook(workbook, THEME_OPTIONS);
+
+  assert.deepEqual(settingsOf(menu), { storeName: "", theme: "beige", autoAdvanceSec: 0 });
+});
