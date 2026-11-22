@@ -23,7 +23,7 @@ function toMenuItem(row) {
     name: row[MENU_COLUMNS.name],
     price: row[MENU_COLUMNS.price],
     desc: row[MENU_COLUMNS.desc],
-    soldOut: false,
+    soldOut: row[MENU_COLUMNS.soldOut] === "Y",
     category: row[MENU_COLUMNS.category],
   };
 }

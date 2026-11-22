@@ -139,13 +139,13 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T08 품절 칸이 `Y`면 품절로 표시한다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/parse-workbook.test.mjs` › `shouldMarkItemSoldOutWhenColumnIsY`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 품절 `Y` → `soldOut: true` / 품절 빈칸 → `soldOut: false`
 - Red 기대 실패: `AssertionError` (T06의 Fake It으로 `soldOut`이 늘 `false`)
-- Red 기록:
-- Green 기록:
+- Red 기록: `AssertionError: actual false, expected true` (T06의 Fake It `soldOut: false`)
+- Green 기록: Obvious Implementation. `row[품절] === "Y"`. Fake It `soldOut: false` 제거. 남은 하드코딩: 매직 문자열 `"Y"`.
 - Refactor 기록:
 
 ### T09 품절 칸의 소문자·공백도 `Y`로 인정한다

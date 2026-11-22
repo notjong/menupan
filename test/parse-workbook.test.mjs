@@ -68,3 +68,18 @@ test("shouldSkipRowsWithEmptyName", () => {
 
   assert.deepEqual(menu.pages[0].items.map((item) => item.name), ["아메리카노", "라떼"]);
 });
+
+test("shouldMarkItemSoldOutWhenColumnIsY", () => {
+  const workbook = makeWorkbook({
+    커피: [
+      MENU_HEADER,
+      ["디카페인 아메리카노", 5000, "", "Y"],
+      ["아메리카노", 4500, "", ""],
+    ],
+  });
+
+  const [soldOutItem, availableItem] = parseWorkbook(workbook).pages[0].items;
+
+  assert.equal(soldOutItem.soldOut, true);
+  assert.equal(availableItem.soldOut, false);
+});
