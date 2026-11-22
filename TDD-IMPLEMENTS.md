@@ -93,13 +93,13 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T04 `_`로 시작하는 시트는 페이지에서 뺀다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/parse-workbook.test.mjs` › `shouldExcludeSheetsStartingWithUnderscore`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 시트 `커피`, `_설정` → 페이지 이름 `["커피"]`
 - Red 기대 실패: `AssertionError` (`_설정`이 페이지에 포함됨)
-- Red 기록:
-- Green 기록:
+- Red 기록: `AssertionError: actual ['커피', '_설정'], expected ['커피']`
+- Green 기록: Obvious Implementation. `name.startsWith("_")` 시트를 거른다. 남은 하드코딩: 매직 문자열 `"_"`.
 - Refactor 기록:
 
 ### T05 페이지 순서는 Excel 탭 순서를 따른다

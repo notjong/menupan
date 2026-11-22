@@ -21,3 +21,11 @@ test("shouldTurnEachSheetIntoPage", () => {
   assert.equal(menu.pages.length, 2);
   assert.deepEqual(menu.pages.map((page) => page.name), ["커피", "디저트"]);
 });
+
+test("shouldExcludeSheetsStartingWithUnderscore", () => {
+  const workbook = makeWorkbook({ 커피: [MENU_HEADER], _설정: [["항목", "값"]] });
+
+  const menu = parseWorkbook(workbook);
+
+  assert.deepEqual(menu.pages.map((page) => page.name), ["커피"]);
+});
