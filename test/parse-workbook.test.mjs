@@ -37,3 +37,19 @@ test("shouldKeepWorkbookSheetOrder", () => {
 
   assert.deepEqual(menu.pages.map((page) => page.name), ["음료", "커피"]);
 });
+
+test("shouldMapColumnsToItemFields", () => {
+  const workbook = makeWorkbook({
+    커피: [MENU_HEADER, ["아메리카노", 4500, "깔끔한 산미", "", "에스프레소"]],
+  });
+
+  const menu = parseWorkbook(workbook);
+
+  assert.deepEqual(menu.pages[0].items[0], {
+    name: "아메리카노",
+    price: 4500,
+    desc: "깔끔한 산미",
+    soldOut: false,
+    category: "에스프레소",
+  });
+});

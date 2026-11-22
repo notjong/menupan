@@ -117,13 +117,13 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T06 각 열이 메뉴 항목의 값이 된다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/parse-workbook.test.mjs` › `shouldMapColumnsToItemFields`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 헤더 `메뉴명 | 가격 | 설명 | 품절 | 카테고리`, 행 `아메리카노 | 4500 | 깔끔한 산미 | (빈칸) | 에스프레소` → `pages[0].items[0]` = `{ name: "아메리카노", price: 4500, desc: "깔끔한 산미", soldOut: false, category: "에스프레소" }`
 - Red 기대 실패: `AssertionError` (`items`가 없거나 비어 있음)
-- Red 기록:
-- Green 기록:
+- Red 기록: `TypeError: Cannot read properties of undefined (reading '0')` (`items` 없음)
+- Green 기록: Obvious Implementation(`XLSX.utils.sheet_to_json`로 행 → 객체) + Fake It(`soldOut: false` 고정). 남은 하드코딩: `soldOut: false`(T08에서 풀림), 열 이름 문자열 5개가 매핑 안에 흩어짐.
 - Refactor 기록:
 
 ### T07 메뉴명이 빈 행은 건너뛴다
