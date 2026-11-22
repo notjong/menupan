@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { groupByCategory } from "../public/board-state.mjs";
+import { groupByCategory, resolvePageIndex } from "../public/board-state.mjs";
 
 test("shouldGroupItemsByCategoryInOrder", () => {
   const items = [
@@ -15,4 +15,8 @@ test("shouldGroupItemsByCategoryInOrder", () => {
     { category: "에스프레소", items: [items[0], items[1]] },
     { category: "브루잉", items: [items[2]] },
   ]);
+});
+
+test("shouldKeepCurrentPageIndexAfterUpdate", () => {
+  assert.equal(resolvePageIndex(1, 3), 1);
 });
