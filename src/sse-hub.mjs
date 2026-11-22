@@ -9,7 +9,8 @@ export function createSseHub() {
       clients.add(res);
     },
     broadcast(name, data) {
-      for (const res of clients) res.write(formatSseEvent(name, data));
+      const frame = formatSseEvent(name, data);
+      for (const res of clients) res.write(frame);
     },
   };
 }

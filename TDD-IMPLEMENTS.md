@@ -291,14 +291,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T20 연결된 모든 브라우저에 신호를 보낸다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/sse-hub.test.mjs` › `shouldWriteEventToAllConnectedClients`
 - 대상: `src/sse-hub.mjs` › `createSseHub()` → `{ add(res), broadcast(name, data) }`
 - 주어진 상황 → 기대 결과: 가짜 응답 2개 `add` 후 `broadcast("menu-updated", {})` → 두 응답 모두 `write("event: menu-updated\ndata: {}\n\n")` 1번
 - Red 기대 실패: `SyntaxError`(export 없음) 또는 `TypeError` (`createSseHub` 없음)
 - Red 기록: `SyntaxError: The requested module '../src/sse-hub.mjs' does not provide an export named 'createSseHub'`. import 실패라 같은 파일의 T19 테스트도 이번 실행에서는 돌지 않았다(전체 19개 중 실패 1 = 파일 단위).
 - Green 기록: Obvious Implementation. `Set`에 응답을 모으고 `broadcast`가 모두에게 `write`. 닫힌 연결 제거는 넣지 않음(T21). 정리 거리: 클라이언트마다 같은 프레임을 다시 만든다.
-- Refactor 기록:
+- Refactor 기록: Extract Variable `frame`(프레임을 한 번만 만든다). `npm test` 통과. 남은 하드코딩 없음.
 
 ### T21 창을 닫은 브라우저는 목록에서 뺀다
 

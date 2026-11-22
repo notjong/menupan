@@ -74,7 +74,7 @@ Excel은 한 번 저장할 때 파일 이벤트를 여러 번 낸다. 이를 300
 
 열린 브라우저 목록을 들고 있다가 "메뉴 바뀜" 신호를 보낸다.
 
-- [ ] **연결된 모든 브라우저에 신호를 보낸다** (`shouldWriteEventToAllConnectedClients`)
+- [x] **연결된 모든 브라우저에 신호를 보낸다** (`shouldWriteEventToAllConnectedClients`)
   - 브라우저 2개 연결 후 알림 → 둘 다 받음
 - [ ] **창을 닫은 브라우저는 목록에서 뺀다** (`shouldRemoveClientOnClose`)
   - 1개 닫힘 후 알림 → 남은 1개만 받음
