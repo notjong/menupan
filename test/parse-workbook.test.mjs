@@ -93,3 +93,13 @@ test("shouldTreatLowercaseAndPaddedYAsSoldOut", () => {
 
   assert.deepEqual(items.map((item) => item.soldOut), [true, true]);
 });
+
+test("shouldSetPriceNullWhenNotNumeric", () => {
+  const workbook = makeWorkbook({
+    커피: [MENU_HEADER, ["오늘의 원두", "시가"], ["라떼", "4,500원"]],
+  });
+
+  const items = parseWorkbook(workbook).pages[0].items;
+
+  assert.deepEqual(items.map((item) => item.price), [null, null]);
+});

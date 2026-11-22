@@ -26,7 +26,7 @@ function isSoldOutMark(value) {
 function toMenuItem(row) {
   return {
     name: row[MENU_COLUMNS.name],
-    price: row[MENU_COLUMNS.price],
+    price: Number.isFinite(row[MENU_COLUMNS.price]) ? row[MENU_COLUMNS.price] : null,
     desc: row[MENU_COLUMNS.desc],
     soldOut: isSoldOutMark(row[MENU_COLUMNS.soldOut]),
     category: row[MENU_COLUMNS.category],
