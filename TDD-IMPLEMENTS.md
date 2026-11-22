@@ -387,13 +387,13 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T27 같은 카테고리끼리 묶되 Excel 순서를 지킨다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/board-state.test.mjs` › `shouldGroupItemsByCategoryInOrder`
 - 대상: `public/board-state.mjs` › `groupByCategory(items)`
 - 주어진 상황 → 기대 결과: 카테고리 순서 `에스프레소, 에스프레소, 브루잉` → `[{ category: "에스프레소", items: [2개] }, { category: "브루잉", items: [1개] }]`
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`public/board-state.mjs` 없음)
-- Red 기록:
-- Green 기록:
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../public/board-state.mjs'`
+- Green 기록: Obvious Implementation. `Map`이 처음 나온 순서를 지키는 성질로 묶는다. `Map.groupBy`는 구형 사이니지 브라우저 지원이 불확실해 쓰지 않았다. 남은 하드코딩 없음.
 - Refactor 기록:
 
 ### T28 메뉴가 갱신돼도 보던 페이지에 머문다
