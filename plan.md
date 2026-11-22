@@ -148,7 +148,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 - [x] **세션 없이 설정 API를 부르면 401** (`shouldRejectAdminSettingsWithoutSession`)
 - [x] **로그인하면 HttpOnly 세션 쿠키를 준다** (`shouldLoginAndSetSessionCookie`)
   - 맞는 계정 → 200 + `Set-Cookie: ...; HttpOnly`, 틀린 계정 → 401
-- [ ] **세션이 있으면 현재 설정과 선택지를 준다** (`shouldReturnCurrentSettingsAndOptions`)
+- [x] **세션이 있으면 현재 설정과 선택지를 준다** (`shouldReturnCurrentSettingsAndOptions`)
   - → `{ settings, themes, devices }`
 - [ ] **올바른 설정을 저장한다** (`shouldSaveValidSettingsWithSession`)
   - `PUT /api/admin/settings` → `saveSettings`가 검증된 값으로 1번 불림, 204

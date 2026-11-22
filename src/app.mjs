@@ -20,14 +20,15 @@ function readCookie(req, name) {
 
 export function createApp({ getMenu, hub, auth, getThemes }) {
   const app = express();
+  const requireSession = (req, res, next) =>
+    auth.isValid(readCookie(req, SESSION_COOKIE)) ? next() : res.sendStatus(401);
   app.get("/api/menu", (_req, res) => res.json(getMenu()));
   app.get("/events", (_req, res) => {
     res.set(SSE_HEADERS);
     res.flushHeaders();
     hub.add(res);
   });
-  app.get("/api/admin/settings", (req, res) => {
-    if (!auth.isValid(readCookie(req, SESSION_COOKIE))) return res.sendStatus(401);
+  app.get("/api/admin/settings", requireSession, (_req, res) => {
     const { storeName, tagline, theme, device, autoAdvanceSec } = getMenu();
     res.json({
       settings: { storeName, tagline, theme, device, autoAdvanceSec },

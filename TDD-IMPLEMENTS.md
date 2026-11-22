@@ -571,13 +571,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T42 세션이 있으면 현재 설정과 선택지를 준다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/app.test.mjs` › `shouldReturnCurrentSettingsAndOptions`
 - 대상: `src/app.mjs` › `GET /api/admin/settings`
 - 주어진 상황 → 기대 결과: 로그인 쿠키로 요청 → 200, `{ settings: { storeName, tagline, theme, device, autoAdvanceSec }, themes, devices }`
 - Red 기대 실패: `AssertionError` (401 또는 본문 없음)
 - Red 기록: `AssertionError: 401 !== 200` (T40의 Fake It)
 - Green 기록: Obvious Implementation. `Cookie` 머리를 직접 나눠(`readCookie`) 세션을 확인하고, 현재 메뉴에서 설정 5개를 골라 `getThemes()`, `DEVICES`와 함께 낸다. T40의 Fake It 제거. 남은 정리 거리: 세션 확인이 라우트 안에 있어 저장·로그아웃에서 반복될 예정.
+- Refactor 기록: Extract Function(미들웨어) `requireSession`. 저장(T43)·로그아웃(T45)에서 그대로 쓴다. `npm test` 통과. 남은 하드코딩 없음.
 
 ### T43 올바른 설정을 저장한다
 
