@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { groupByCategory, resolvePageIndex } from "../public/board-state.mjs";
+import { groupByCategory, nextPageIndex, resolvePageIndex } from "../public/board-state.mjs";
 
 test("shouldGroupItemsByCategoryInOrder", () => {
   const items = [
@@ -23,4 +23,9 @@ test("shouldKeepCurrentPageIndexAfterUpdate", () => {
 
 test("shouldClampPageIndexWhenPagesShrink", () => {
   assert.equal(resolvePageIndex(2, 2), 1);
+});
+
+test("shouldComputeNextPageIndexCyclically", () => {
+  assert.equal(nextPageIndex(2, 3), 0);
+  assert.equal(nextPageIndex(0, 3), 1);
 });

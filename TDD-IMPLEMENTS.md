@@ -420,12 +420,12 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T30 자동 전환은 마지막 다음에 처음으로 돌아간다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/board-state.test.mjs` › `shouldComputeNextPageIndexCyclically`
 - 대상: `public/board-state.mjs` › `nextPageIndex(currentIndex, pageCount)`
 - 주어진 상황 → 기대 결과: `nextPageIndex(2, 3)` → `0`, `nextPageIndex(0, 3)` → `1`
 - Red 기대 실패: `SyntaxError` (export `nextPageIndex` 없음)
 - 후속: 이 항목이 `DONE`이 되면 `public/index.html`, `client.js`, 테마 CSS를 만든다. 화면 코드는 `docs/TRD.md` 5·6절과 `.claude/rules/anti-ai-slop.md`를 따른다. 브라우저에서 PRD 7절 인수 조건 6개를 직접 확인한다.
-- Red 기록:
-- Green 기록:
+- Red 기록: `SyntaxError: ... does not provide an export named 'nextPageIndex'`. import 실패라 같은 파일의 T27~T29 테스트도 이번 실행에서는 돌지 않았다(전체 27개로 집계).
+- Green 기록: Obvious Implementation. `(currentIndex + 1) % pageCount`. 남은 하드코딩 없음.
 - Refactor 기록:

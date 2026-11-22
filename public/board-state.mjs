@@ -10,3 +10,7 @@ export function groupByCategory(items) {
 export function resolvePageIndex(currentIndex, pageCount) {
   return Math.min(currentIndex, pageCount - 1);
 }
+
+export function nextPageIndex(currentIndex, pageCount) {
+  return (currentIndex + 1) % pageCount;
+}
