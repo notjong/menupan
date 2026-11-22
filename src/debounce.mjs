@@ -1,8 +1,7 @@
 export function debounce(fn, ms) {
-  let scheduled = false;
+  let timer;
   return () => {
-    if (scheduled) return;
-    scheduled = true;
-    setTimeout(fn, ms);
+    clearTimeout(timer);
+    timer = setTimeout(fn, ms);
   };
 }
