@@ -251,13 +251,13 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T17 300ms 안에 이벤트가 여러 번 와도 한 번만 처리한다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/debounce.test.mjs` › `shouldCallOnceForBurstWithin300ms`
 - 대상: `src/debounce.mjs` › `debounce(fn, ms)`
 - 주어진 상황 → 기대 결과: `debounce(fn, 300)`을 0ms, 100ms, 200ms에 호출하고 500ms까지 흘림 → `fn` 호출 1번
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/debounce.mjs` 없음)
-- Red 기록:
-- Green 기록:
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/debounce.mjs'`
+- Green 기록: Fake It. 처음 호출에만 `setTimeout(fn, ms)`를 걸고 그 뒤 호출은 모두 무시한다. 남은 하드코딩: 한 번 걸리면 영원히 닫히는 `scheduled` 플래그(T18에서 풀림).
 - Refactor 기록:
 
 ### T18 조용한 시간이 지난 뒤 다시 오면 또 처리한다
