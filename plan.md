@@ -65,7 +65,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
 
 Excel은 한 번 저장할 때 파일 이벤트를 여러 번 낸다. 이를 300ms 단위로 한 번으로 합친다. 실제 시간 대신 가짜 시계로 테스트한다.
 
-- [ ] **300ms 안에 이벤트가 여러 번 와도 한 번만 처리한다** (`shouldCallOnceForBurstWithin300ms`)
+- [x] **300ms 안에 이벤트가 여러 번 와도 한 번만 처리한다** (`shouldCallOnceForBurstWithin300ms`)
   - 0ms, 100ms, 200ms에 이벤트 → 500ms에 처리 1번
 - [ ] **조용한 시간이 지난 뒤 다시 오면 또 처리한다** (`shouldCallAgainAfterQuietPeriod`)
   - 0ms 이벤트, 1000ms 이벤트 → 처리 2번
