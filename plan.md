@@ -32,7 +32,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
 
 ### 2-2. 행 → 메뉴 항목
 
-- [ ] **각 열이 메뉴 항목의 값이 된다** (`shouldMapColumnsToItemFields`)
+- [x] **각 열이 메뉴 항목의 값이 된다** (`shouldMapColumnsToItemFields`)
   - `아메리카노 | 4500 | 깔끔한 산미 | (빈칸) | 에스프레소` → `{ name: "아메리카노", price: 4500, desc: "깔끔한 산미", soldOut: false, category: "에스프레소" }`
 - [ ] **메뉴명이 빈 행은 건너뛴다** (`shouldSkipRowsWithEmptyName`)
   - 중간에 빈 줄이 있는 시트 → 빈 줄은 항목에 안 들어간다
