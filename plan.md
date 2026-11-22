@@ -150,7 +150,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
   - 맞는 계정 → 200 + `Set-Cookie: ...; HttpOnly`, 틀린 계정 → 401
 - [x] **세션이 있으면 현재 설정과 선택지를 준다** (`shouldReturnCurrentSettingsAndOptions`)
   - → `{ settings, themes, devices }`
-- [ ] **올바른 설정을 저장한다** (`shouldSaveValidSettingsWithSession`)
+- [x] **올바른 설정을 저장한다** (`shouldSaveValidSettingsWithSession`)
   - `PUT /api/admin/settings` → `saveSettings`가 검증된 값으로 1번 불림, 204
 - [ ] **잘못된 설정은 400이고 저장하지 않는다** (`shouldRejectInvalidSettingsWith400`)
 - [ ] **로그아웃하면 세션이 끊긴다** (`shouldEndSessionOnLogout`)

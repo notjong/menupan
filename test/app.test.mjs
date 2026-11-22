@@ -97,3 +97,24 @@ test("shouldReturnCurrentSettingsAndOptions", async (t) => {
     devices: ["mobile", "tablet-port", "tablet-land", "signage"],
   });
 });
+
+function putSettings(baseUrl, cookie, body) {
+  return fetch(`${baseUrl}/api/admin/settings`, {
+    method: "PUT",
+    headers: { "content-type": "application/json", cookie },
+    body: JSON.stringify(body),
+  });
+}
+
+test("shouldSaveValidSettingsWithSession", async (t) => {
+  const saveSettings = t.mock.fn();
+  const baseUrl = await startServer(t, createAdminApp({ saveSettings }));
+  const cookie = await loginCookie(baseUrl);
+  const next = { ...CURRENT_SETTINGS, theme: "beige", autoAdvanceSec: "5" };
+
+  const response = await putSettings(baseUrl, cookie, next);
+
+  assert.equal(response.status, 204);
+  assert.equal(saveSettings.mock.callCount(), 1);
+  assert.deepEqual(saveSettings.mock.calls[0].arguments[0], { ...next, autoAdvanceSec: 5 });
+});

@@ -582,11 +582,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T43 올바른 설정을 저장한다
 
-- 상태: TODO
+- 상태: DONE
 - 테스트: `test/app.test.mjs` › `shouldSaveValidSettingsWithSession`
 - 대상: `src/app.mjs` › `PUT /api/admin/settings`
 - 주어진 상황 → 기대 결과: 로그인 쿠키 + 올바른 JSON → 204, `saveSettings`가 검증된 값으로 1번 불림
 - Red 기대 실패: `AssertionError` (404)
+- Red 기록: `AssertionError: 404 !== 204`
+- Green 기록: Obvious Implementation. 세션 확인 → `validateSettings` → `saveSettings(result.settings)` → 204. 남은 하드코딩: 검증 실패를 보지 않는다 — T44에서 풀림.
+- Refactor 기록: 변경 없음. 라우트 세 줄이고 검증·저장은 이미 각 모듈에 있다.
 
 ### T44 잘못된 설정은 400이고 저장하지 않는다
 

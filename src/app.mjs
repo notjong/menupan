@@ -1,5 +1,6 @@
 import express from "express";
 import { DEVICES } from "./devices.mjs";
+import { validateSettings } from "./validate-settings.mjs";
 
 const SSE_HEADERS = {
   "Content-Type": "text/event-stream",
@@ -18,7 +19,7 @@ function readCookie(req, name) {
   return undefined;
 }
 
-export function createApp({ getMenu, hub, auth, getThemes }) {
+export function createApp({ getMenu, hub, auth, getThemes, saveSettings }) {
   const app = express();
   const requireSession = (req, res, next) =>
     auth.isValid(readCookie(req, SESSION_COOKIE)) ? next() : res.sendStatus(401);
@@ -35,6 +36,11 @@ export function createApp({ getMenu, hub, auth, getThemes }) {
       themes: getThemes(),
       devices: DEVICES,
     });
+  });
+  app.put("/api/admin/settings", requireSession, express.json(), (req, res) => {
+    const result = validateSettings(req.body ?? {}, { themes: getThemes(), devices: DEVICES });
+    saveSettings(result.settings);
+    res.sendStatus(204);
   });
   app.post("/api/admin/login", express.json(), (req, res) => {
     const token = auth.login(req.body?.username, req.body?.password);
