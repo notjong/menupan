@@ -42,7 +42,13 @@ function parseMenuSheet(sheet) {
 }
 
 export function parseWorkbook(workbook) {
+  const settings = Object.fromEntries(
+    XLSX.utils.sheet_to_json(workbook.Sheets["_설정"]).map((row) => [row["항목"], row["값"]]),
+  );
   return {
+    storeName: settings["매장명"],
+    theme: settings["테마"],
+    autoAdvanceSec: settings["자동전환초"],
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
       items: parseMenuSheet(workbook.Sheets[name]),

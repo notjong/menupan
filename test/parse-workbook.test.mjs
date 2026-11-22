@@ -111,3 +111,22 @@ test("shouldDefaultCategoryToEmptyString", () => {
 
   assert.equal(item.category, "");
 });
+
+const SETTINGS_HEADER = ["항목", "값"];
+const THEME_OPTIONS = { themes: ["cream", "beige"], defaultTheme: "beige" };
+
+function settingsOf(menu) {
+  const { storeName, theme, autoAdvanceSec } = menu;
+  return { storeName, theme, autoAdvanceSec };
+}
+
+test("shouldReadStoreNameThemeAndAutoAdvanceFromSettingsSheet", () => {
+  const workbook = makeWorkbook({
+    커피: [MENU_HEADER],
+    _설정: [SETTINGS_HEADER, ["매장명", "빌런 커피"], ["테마", "cream"], ["자동전환초", 5]],
+  });
+
+  const menu = parseWorkbook(workbook, THEME_OPTIONS);
+
+  assert.deepEqual(settingsOf(menu), { storeName: "빌런 커피", theme: "cream", autoAdvanceSec: 5 });
+});
