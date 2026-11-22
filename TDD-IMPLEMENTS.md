@@ -82,13 +82,13 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T03 시트 하나가 메뉴판 페이지 하나가 된다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/parse-workbook.test.mjs` › `shouldTurnEachSheetIntoPage`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook(workbook)`
 - 주어진 상황 → 기대 결과: 시트 `커피`, `디저트` → `pages.length === 2`, `pages.map(p => p.name)` = `["커피", "디저트"]`
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/parse-workbook.mjs` 없음)
-- Red 기록:
-- Green 기록:
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/parse-workbook.mjs'`. 테스트 픽스처용 `xlsx` 0.20.3(CDN) 설치.
+- Green 기록: Obvious Implementation. `workbook.SheetNames`를 `{ name }` 페이지로 매핑. 남은 하드코딩 없음.
 - Refactor 기록:
 
 ### T04 `_`로 시작하는 시트는 페이지에서 뺀다
