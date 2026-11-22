@@ -23,3 +23,9 @@ test("shouldRejectUnknownThemeOrDevice", () => {
   assert.equal(result.ok, false);
   assert.deepEqual(result.errors.map((error) => error.field), ["theme", "device"]);
 });
+
+test("shouldRejectInvalidAutoAdvanceSec", () => {
+  const okFor = (autoAdvanceSec) => validateSettings({ ...VALID_INPUT, autoAdvanceSec }, OPTIONS).ok;
+
+  assert.deepEqual([-1, 1.5, "빠르게"].map(okFor), [false, false, false]);
+});

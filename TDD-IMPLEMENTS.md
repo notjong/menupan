@@ -527,11 +527,13 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T38 자동전환초는 0 이상 정수만 받는다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/validate-settings.test.mjs` › `shouldRejectInvalidAutoAdvanceSec`
 - 대상: `src/validate-settings.mjs` › `validateSettings`
 - 주어진 상황 → 기대 결과: `-1`, `1.5`, `"빠르게"` → 모두 `ok: false`
 - Red 기대 실패: `AssertionError`
+- Red 기록: `AssertionError: [true, true, true]` 기대 `[false, false, false]`
+- Green 기록: Obvious Implementation. `Number()`로 바꾼 값이 정수이고 0 이상일 때만 받는다. 남은 하드코딩 없음. 참고: 빈 문자열은 `Number("") = 0`이라 수동 전환으로 받는다.
 
 ### T39 맞는 계정에만 세션을 준다
 
