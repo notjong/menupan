@@ -87,7 +87,7 @@ Excel은 한 번 저장할 때 파일 이벤트를 여러 번 낸다. 이를 300
 
 - [x] **`GET /api/menu`가 메뉴 JSON을 준다** (`shouldServeMenuJsonFromApiMenu`)
   - 요청 → 200, `pages` 배열 포함
-- [ ] **`GET /events`가 SSE 연결을 연다** (`shouldRespondEventStreamHeadersOnEvents`)
+- [x] **`GET /events`가 SSE 연결을 연다** (`shouldRespondEventStreamHeadersOnEvents`)
   - 응답 헤더 `Content-Type: text/event-stream`
 - [ ] **Excel을 읽다 실패하면 직전 메뉴를 그대로 보여준다** (`shouldKeepPreviousDataWhenParseFails`)
   - 저장 도중 깨진 파일 → `/api/menu`는 이전 정상 데이터

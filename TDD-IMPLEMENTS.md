@@ -336,14 +336,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T23 `GET /events`가 SSE 연결을 연다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/app.test.mjs` › `shouldRespondEventStreamHeadersOnEvents`
 - 대상: `src/app.mjs` › `createApp` (`hub.add(res)` 호출)
 - 주어진 상황 → 기대 결과: `GET /events` → 응답 헤더 `content-type`이 `text/event-stream`으로 시작, `cache-control: no-cache`. 헤더 확인 후 요청을 끊는다(`AbortController`).
 - Red 기대 실패: `AssertionError` (404)
 - Red 기록: `AssertionError: actual 'text/html; charset=utf-8'` (404 응답). 테스트 도우미 `startServer`의 정리에 `closeAllConnections()`를 넣었다(열린 SSE 연결 때문에 `close`가 끝나지 않는 것 방지).
 - Green 기록: Obvious Implementation. `/events`에서 SSE 헤더 설정 → `flushHeaders()` → `hub.add(res)`. 정리 거리: 라우트 안의 헤더 객체 리터럴.
-- Refactor 기록:
+- Refactor 기록: Introduce Constant `SSE_HEADERS`. `npm test` 통과. 남은 하드코딩 없음.
 
 ### T24 Excel을 읽다 실패하면 직전 메뉴를 유지한다
 
