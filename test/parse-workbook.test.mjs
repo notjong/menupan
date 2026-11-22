@@ -53,3 +53,18 @@ test("shouldMapColumnsToItemFields", () => {
     category: "에스프레소",
   });
 });
+
+test("shouldSkipRowsWithEmptyName", () => {
+  const workbook = makeWorkbook({
+    커피: [
+      MENU_HEADER,
+      ["아메리카노", 4500],
+      ["", 3000, "메뉴명이 빠진 행"],
+      ["라떼", 5000],
+    ],
+  });
+
+  const menu = parseWorkbook(workbook);
+
+  assert.deepEqual(menu.pages[0].items.map((item) => item.name), ["아메리카노", "라떼"]);
+});

@@ -128,13 +128,13 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T07 메뉴명이 빈 행은 건너뛴다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/parse-workbook.test.mjs` › `shouldSkipRowsWithEmptyName`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 행 `아메리카노`, (메뉴명 빈 행), `라떼` → `items.map(i => i.name)` = `["아메리카노", "라떼"]`
 - Red 기대 실패: `AssertionError` (빈 항목이 섞임)
-- Red 기록:
-- Green 기록:
+- Red 기록: `AssertionError: actual ['아메리카노', '', '라떼'], expected ['아메리카노', '라떼']`
+- Green 기록: Obvious Implementation. 메뉴명이 falsy인 행을 `filter`로 거른다. 남은 하드코딩 없음. 정리 거리: 익명 조건식, `parseWorkbook` 안 중첩 파이프라인.
 - Refactor 기록:
 
 ### T08 품절 칸이 `Y`면 품절로 표시한다

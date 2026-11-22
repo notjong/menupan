@@ -28,7 +28,9 @@ export function parseWorkbook(workbook) {
   return {
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
-      items: XLSX.utils.sheet_to_json(workbook.Sheets[name]).map(toMenuItem),
+      items: XLSX.utils.sheet_to_json(workbook.Sheets[name])
+        .filter((row) => row[MENU_COLUMNS.name])
+        .map(toMenuItem),
     })),
   };
 }
