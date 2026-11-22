@@ -233,15 +233,15 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T16 `data/menu.xlsx`를 읽으면 커피·디저트·음료 3페이지가 나온다
 
-- 상태: TODO
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldParseSampleDataMenuXlsx`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook` (파일 읽기는 테스트에서 `XLSX.readFile`로 한다)
 - 주어진 상황 → 기대 결과: `data/menu.xlsx` → 페이지 이름 `["커피", "디저트", "음료"]`
 - 주의: Red 전에 실제 파일의 시트 이름을 먼저 확인한다. 다르면 기대값을 맞추기 전에 사용자에게 알린다.
 - Red 기대 실패: 앞 항목이 모두 끝났다면 바로 통과할 수 있다. 그때는 `/tdd-red` 규칙대로 멈추고 사용자에게 확인한다(이 항목은 회귀 점검용이다).
-- Red 기록:
-- Green 기록:
-- Refactor 기록:
+- Red 기록: Red 실패 없음: 첫 실행에서 통과(예상한 회귀 점검). 실제 시트: `커피, 디저트, 음료, _설정`. ESM 빌드의 `XLSX.readFile`은 fs 연결이 없어 `XLSX.read(readFileSync(...))`로 읽는다. `_설정`에 문서에 없는 항목 `디바이스=tablet-port`, `영문태그=SPECIALTY COFFEE`가 있다(현재 무시됨).
+- Green 기록: 구현 없음(이미 통과).
+- Refactor 기록: 변경 없음. 제품 코드를 건드리지 않았다.
 
 ---
 

@@ -58,7 +58,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
 
 ### 2-4. 실제 샘플 파일
 
-- [ ] **`data/menu.xlsx`를 읽으면 커피·디저트·음료 3페이지가 나온다** (`shouldParseSampleDataMenuXlsx`)
+- [x] **`data/menu.xlsx`를 읽으면 커피·디저트·음료 3페이지가 나온다** (`shouldParseSampleDataMenuXlsx`)
   - 실제 파일로 확인하는 마지막 점검
 
 ## 3. 저장 이벤트 합치기 — `src/debounce.mjs`

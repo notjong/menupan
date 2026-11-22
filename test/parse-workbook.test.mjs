@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import * as XLSX from "xlsx";
 import { parseWorkbook } from "../src/parse-workbook.mjs";
 
@@ -154,4 +155,12 @@ test("shouldFallBackToDefaultThemeWhenUnknown", () => {
   });
 
   assert.equal(parseWorkbook(workbook, THEME_OPTIONS).theme, "beige");
+});
+
+test("shouldParseSampleDataMenuXlsx", () => {
+  const workbook = XLSX.read(readFileSync(new URL("../data/menu.xlsx", import.meta.url)));
+
+  const menu = parseWorkbook(workbook, THEME_OPTIONS);
+
+  assert.deepEqual(menu.pages.map((page) => page.name), ["커피", "디저트", "음료"]);
 });
