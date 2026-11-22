@@ -46,14 +46,14 @@ TODO ──/tdd-red──▶ RED ──/tdd-green──▶ GREEN ──/tdd-refa
 
 ### T01 가격에 콤마와 "원"을 붙인다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/format.test.mjs` › `shouldFormatPriceWithCommaAndWon`
 - 대상: `src/format.mjs` › `formatPrice(price)`
 - 주어진 상황 → 기대 결과: `formatPrice(4500)` → `"4,500원"`
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/format.mjs` 없음)
 - Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/format.mjs' imported from .../test/format.test.mjs` (tests 1, fail 1)
 - Green 기록: Fake It. `formatPrice()`가 상수 `"4,500원"`을 반환한다. 남은 하드코딩: 반환값 `"4,500원"`(테스트 기대값과 중복). 미사용 경고(ts 6133)를 없애려고 매개변수 `price`를 뺐다. 일반화할 때 다시 넣는다.
-- Refactor 기록:
+- Refactor 기록: 테스트와 코드 사이 중복(`4500` ↔ `"4,500원"`) 제거. (1) Introduce Parameter `price` + Substitute Algorithm(상수 → `Intl.NumberFormat("ko-KR")`, TRD 3.3절). 매개변수만 넣으면 미사용 경고가 다시 나서 두 단계를 한 번에 했다. (2) Extract Constant `KRW_NUMBER_FORMAT`, `PRICE_UNIT`. 단계마다 `npm test` 통과. 남은 하드코딩 없음.
 
 ### T02 가격이 없으면 빈 문자열을 반환한다
 

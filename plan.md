@@ -12,7 +12,7 @@
 
 Excel에는 숫자만 넣고, 화면에는 "4,500원"처럼 보여야 한다.
 
-- [ ] **가격에 콤마와 "원"을 붙인다** (`shouldFormatPriceWithCommaAndWon`)
+- [x] **가격에 콤마와 "원"을 붙인다** (`shouldFormatPriceWithCommaAndWon`)
   - `4500` → `"4,500원"`
 - [ ] **가격이 없으면 아무것도 표시하지 않는다** (`shouldReturnEmptyStringWhenPriceIsNull`)
   - `null` → `""`
