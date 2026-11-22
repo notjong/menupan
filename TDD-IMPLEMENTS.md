@@ -57,13 +57,13 @@ TODO ──/tdd-red──▶ RED ──/tdd-green──▶ GREEN ──/tdd-refa
 
 ### T02 가격이 없으면 빈 문자열을 반환한다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/format.test.mjs` › `shouldReturnEmptyStringWhenPriceIsNull`
 - 대상: `src/format.mjs` › `formatPrice(price)`
 - 주어진 상황 → 기대 결과: `formatPrice(null)` → `""`
 - Red 기대 실패: `AssertionError` (`"null원"` 같은 값이 나옴)
-- Red 기록:
-- Green 기록:
+- Red 기록: `AssertionError: actual '0원', expected ''` (Intl.NumberFormat이 null을 0으로 바꿈)
+- Green 기록: Obvious Implementation. `price === null`이면 `""` 반환(가드 절). 남은 하드코딩 없음.
 - Refactor 기록:
 
 ---

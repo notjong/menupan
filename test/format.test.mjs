@@ -5,3 +5,7 @@ import { formatPrice } from "../src/format.mjs";
 test("shouldFormatPriceWithCommaAndWon", () => {
   assert.equal(formatPrice(4500), "4,500원");
 });
+
+test("shouldReturnEmptyStringWhenPriceIsNull", () => {
+  assert.equal(formatPrice(null), "");
+});
