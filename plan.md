@@ -106,5 +106,5 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
   - 2번째 페이지를 보는 중 갱신 → 계속 2번째 페이지
 - [x] **페이지가 줄면 마지막 페이지로 옮긴다** (`shouldClampPageIndexWhenPagesShrink`)
   - 3번째 페이지를 보는 중 시트 삭제로 2페이지가 됨 → 2번째 페이지
-- [ ] **자동 전환은 마지막 다음에 처음으로 돌아간다** (`shouldComputeNextPageIndexCyclically`)
+- [x] **자동 전환은 마지막 다음에 처음으로 돌아간다** (`shouldComputeNextPageIndexCyclically`)
   - 3페이지 중 3번째 → 다음은 1번째
