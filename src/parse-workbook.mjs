@@ -63,7 +63,10 @@ export function parseWorkbook(workbook, { defaultTheme } = {}) {
   return {
     storeName: settings[SETTING_KEYS.storeName] ?? "",
     theme: settings[SETTING_KEYS.theme] ?? defaultTheme,
-    autoAdvanceSec: settings[SETTING_KEYS.autoAdvanceSec] ?? MANUAL_ADVANCE_SEC,
+    autoAdvanceSec:
+      Number.isFinite(settings[SETTING_KEYS.autoAdvanceSec]) && settings[SETTING_KEYS.autoAdvanceSec] > 0
+        ? settings[SETTING_KEYS.autoAdvanceSec]
+        : MANUAL_ADVANCE_SEC,
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
       items: parseMenuSheet(workbook.Sheets[name]),

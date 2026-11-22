@@ -138,3 +138,11 @@ test("shouldUseDefaultsWhenSettingsSheetMissing", () => {
 
   assert.deepEqual(settingsOf(menu), { storeName: "", theme: "beige", autoAdvanceSec: 0 });
 });
+
+test("shouldClampNegativeAutoAdvanceToZero", () => {
+  const withAutoAdvance = (value) =>
+    makeWorkbook({ 커피: [MENU_HEADER], _설정: [SETTINGS_HEADER, ["자동전환초", value]] });
+
+  assert.equal(parseWorkbook(withAutoAdvance(-3), THEME_OPTIONS).autoAdvanceSec, 0);
+  assert.equal(parseWorkbook(withAutoAdvance("빠르게"), THEME_OPTIONS).autoAdvanceSec, 0);
+});
