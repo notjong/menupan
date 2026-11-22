@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import { DEFAULT_DEVICE, DEVICES } from "./devices.mjs";
 
 const HIDDEN_SHEET_PREFIX = "_";
 const SOLD_OUT_MARK = "Y";
@@ -60,6 +61,10 @@ function toTheme(value, { themes, defaultTheme }) {
   return themes.includes(value) ? value : defaultTheme;
 }
 
+function toDevice(value) {
+  return DEVICES.includes(value) ? value : DEFAULT_DEVICE;
+}
+
 function readSettings(sheet) {
   if (!sheet) return {};
   return Object.fromEntries(
@@ -73,9 +78,7 @@ export function parseWorkbook(workbook, { themes = [], defaultTheme } = {}) {
     storeName: settings[SETTING_KEYS.storeName] ?? "",
     theme: toTheme(settings[SETTING_KEYS.theme], { themes, defaultTheme }),
     autoAdvanceSec: toAutoAdvanceSec(settings[SETTING_KEYS.autoAdvanceSec]),
-    device: ["mobile", "tablet-port", "tablet-land", "signage"].includes(settings[SETTING_KEYS.device])
-      ? settings[SETTING_KEYS.device]
-      : "tablet-port",
+    device: toDevice(settings[SETTING_KEYS.device]),
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
       items: parseMenuSheet(workbook.Sheets[name]),
