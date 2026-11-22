@@ -153,5 +153,5 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 - [x] **올바른 설정을 저장한다** (`shouldSaveValidSettingsWithSession`)
   - `PUT /api/admin/settings` → `saveSettings`가 검증된 값으로 1번 불림, 204
 - [x] **잘못된 설정은 400이고 저장하지 않는다** (`shouldRejectInvalidSettingsWith400`)
-- [ ] **로그아웃하면 세션이 끊긴다** (`shouldEndSessionOnLogout`)
+- [x] **로그아웃하면 세션이 끊긴다** (`shouldEndSessionOnLogout`)
   - 로그아웃 뒤 같은 쿠키로 설정 API → 401

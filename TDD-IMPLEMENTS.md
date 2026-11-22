@@ -604,10 +604,11 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T45 로그아웃하면 세션이 끊긴다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/app.test.mjs` › `shouldEndSessionOnLogout`
 - 대상: `src/app.mjs` › `POST /api/admin/logout`
 - 주어진 상황 → 기대 결과: 로그아웃 뒤 같은 쿠키로 `GET /api/admin/settings` → 401
 - Red 기대 실패: `AssertionError` (404 또는 200)
 - Red 기록: `AssertionError: 200 !== 401` (로그아웃 라우트가 없어 세션이 남음)
 - Green 기록: Obvious Implementation. `auth.logout(token)`이 메모리 세션을 지우고, 라우트가 쿠키도 지운 뒤 204. 남은 하드코딩 없음.
+- Refactor 기록: (1) Extract Function `createAdminRouter`(`express.Router`): 어드민 라우트 4개와 `requireSession`을 `/api/admin` 아래로 모은다 (2) Extract Function `pickSettings`. `npm test` 통과. 남은 하드코딩 없음.
