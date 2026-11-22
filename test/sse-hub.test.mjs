@@ -28,3 +28,17 @@ test("shouldWriteEventToAllConnectedClients", (t) => {
     ]);
   }
 });
+
+test("shouldRemoveClientOnClose", (t) => {
+  const hub = createSseHub();
+  const closed = fakeResponse(t);
+  const open = fakeResponse(t);
+  hub.add(closed);
+  hub.add(open);
+
+  closed.emit("close");
+  hub.broadcast("menu-updated", {});
+
+  assert.equal(closed.write.mock.callCount(), 0);
+  assert.equal(open.write.mock.callCount(), 1);
+});

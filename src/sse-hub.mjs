@@ -7,6 +7,7 @@ export function createSseHub() {
   return {
     add(res) {
       clients.add(res);
+      res.on("close", () => clients.delete(res));
     },
     broadcast(name, data) {
       const frame = formatSseEvent(name, data);
