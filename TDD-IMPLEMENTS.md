@@ -279,7 +279,7 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T19 신호를 SSE 형식으로 만든다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/sse-hub.test.mjs` › `shouldFormatEventAsSseFrame`
 - 대상: `src/sse-hub.mjs` › `formatSseEvent(name, data)`
 - 주어진 상황 → 기대 결과: `formatSseEvent("menu-updated", {})` → `"event: menu-updated\ndata: {}\n\n"`
@@ -287,7 +287,7 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 - 순서 메모: `plan.md`에서는 4절 마지막이다. 아래 T20이 이 형식을 쓰므로 먼저 둔다.
 - Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/sse-hub.mjs'`
 - Green 기록: Obvious Implementation. 템플릿 문자열 + `JSON.stringify(data)`. 남은 하드코딩 없음.
-- Refactor 기록:
+- Refactor 기록: 변경 없음. SSE 표준 형식 한 줄이고 중복·매직 값 없음.
 
 ### T20 연결된 모든 브라우저에 신호를 보낸다
 

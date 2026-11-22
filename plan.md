@@ -78,7 +78,7 @@ Excel은 한 번 저장할 때 파일 이벤트를 여러 번 낸다. 이를 300
   - 브라우저 2개 연결 후 알림 → 둘 다 받음
 - [ ] **창을 닫은 브라우저는 목록에서 뺀다** (`shouldRemoveClientOnClose`)
   - 1개 닫힘 후 알림 → 남은 1개만 받음
-- [ ] **신호를 SSE 형식으로 보낸다** (`shouldFormatEventAsSseFrame`)
+- [x] **신호를 SSE 형식으로 보낸다** (`shouldFormatEventAsSseFrame`)
   - 보내는 문자열 = `event: menu-updated\ndata: {}\n\n`
 
 ## 5. 서버 전체 흐름 — `server.mjs`
