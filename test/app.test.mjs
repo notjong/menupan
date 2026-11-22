@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { createAdminAuth } from "../src/admin-auth.mjs";
 import { createApp } from "../src/app.mjs";
 
 async function startServer(t, app) {
@@ -32,4 +33,19 @@ test("shouldRespondEventStreamHeadersOnEvents", async (t) => {
 
   assert.match(response.headers.get("content-type"), /^text\/event-stream/);
   assert.equal(response.headers.get("cache-control"), "no-cache");
+});
+
+function createAdminApp() {
+  return createApp({
+    getMenu: () => ({ pages: [] }),
+    auth: createAdminAuth({ username: "admin", password: "1234" }),
+  });
+}
+
+test("shouldRejectAdminSettingsWithoutSession", async (t) => {
+  const baseUrl = await startServer(t, createAdminApp());
+
+  const response = await fetch(`${baseUrl}/api/admin/settings`);
+
+  assert.equal(response.status, 401);
 });

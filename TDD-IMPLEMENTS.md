@@ -549,11 +549,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T40 세션 없이 설정 API를 부르면 401
 
-- 상태: TODO
+- 상태: DONE
 - 테스트: `test/app.test.mjs` › `shouldRejectAdminSettingsWithoutSession`
 - 대상: `src/app.mjs` › `createApp`
 - 주어진 상황 → 기대 결과: 쿠키 없이 `GET /api/admin/settings` → 401
 - Red 기대 실패: `AssertionError` (404)
+- Red 기록: `AssertionError: 404 !== 401`
+- Green 기록: Fake It. `GET /api/admin/settings`가 항상 401. 남은 하드코딩: 세션 확인 없음 — T42에서 풀림.
+- Refactor 기록: 변경 없음. Fake It 한 줄이라 일반화 근거가 아직 없다(T42가 삼각측량).
 
 ### T41 로그인하면 HttpOnly 세션 쿠키를 준다
 

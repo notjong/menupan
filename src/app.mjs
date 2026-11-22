@@ -14,5 +14,6 @@ export function createApp({ getMenu, hub }) {
     res.flushHeaders();
     hub.add(res);
   });
+  app.get("/api/admin/settings", (_req, res) => res.sendStatus(401));
   return app;
 }

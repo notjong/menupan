@@ -145,7 +145,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 
 ### 7.5 어드민 API — `src/app.mjs`
 
-- [ ] **세션 없이 설정 API를 부르면 401** (`shouldRejectAdminSettingsWithoutSession`)
+- [x] **세션 없이 설정 API를 부르면 401** (`shouldRejectAdminSettingsWithoutSession`)
 - [ ] **로그인하면 HttpOnly 세션 쿠키를 준다** (`shouldLoginAndSetSessionCookie`)
   - 맞는 계정 → 200 + `Set-Cookie: ...; HttpOnly`, 틀린 계정 → 401
 - [ ] **세션이 있으면 현재 설정과 선택지를 준다** (`shouldReturnCurrentSettingsAndOptions`)
