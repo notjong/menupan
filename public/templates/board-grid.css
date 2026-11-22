@@ -1,5 +1,8 @@
-/* 공통 레이아웃. 테마 CSS(<theme>.css)는 아래 변수 값만 바꾼다.
-   단위는 1vmin = 화면 짧은 변의 1%. 디자인 번들의 u(짧은 변) 비율을 그대로 옮겼다. */
+/* 공통 레이아웃. 테마 CSS(<theme>.css)는 색과 PNG 변수 값만 바꾼다.
+
+   메뉴판(.board)은 디바이스 비율을 지키는 캔버스다. 창 안에 잘리지 않게 맞춰 넣고(contain),
+   남는 여백은 바탕색으로 둔다. 그래서 배경·테두리 PNG가 비율 그대로 들어가 테두리가 잘리지 않는다.
+   크기 단위 --u = 캔버스 짧은 변의 1%. 디자인 번들의 u(짧은 변) 비율을 그대로 옮겼다. */
 
 :root {
   /* 테마가 없을 때(assets 폴더가 비었을 때) 쓰는 무채색 기본값 */
@@ -8,23 +11,33 @@
   --accent: #222222;
   --surface: #f4f3ef;
 
-  --pad: 8.5vmin;
-  --store-size: 5.8vmin;
-  --tab-size: 3vmin;
-  --category-size: 1.6vmin;
-  --name-size: 3vmin;
-  --desc-size: 1.85vmin;
+  /* 디바이스 캔버스 크기(px). 아래 미디어쿼리가 바꾼다. 기본은 tablet-port. */
+  --device-w: 1440;
+  --device-h: 1920;
   --columns: 1;
-
-  /* 디바이스별 배경·테두리. 테마 CSS가 --bg-<디바이스>, --frame-<디바이스>를 정한다. */
   --bg: var(--bg-tablet-port, none);
   --frame: var(--frame-tablet-port, none);
+
+  --board-w: min(100vw, 100dvh * var(--device-w) / var(--device-h));
+  --board-h: min(100dvh, 100vw * var(--device-h) / var(--device-w));
+  --u: calc(min(var(--board-w), var(--board-h)) / 100);
+
+  /* 글자 크기는 디자인 비율을 따르되, 작은 화면(휴대폰 등)에서도 읽히도록 최소값을 둔다 */
+  --pad: calc(var(--u) * 8.5);
+  --store-size: max(calc(var(--u) * 5.8), 24px);
+  --tab-size: max(calc(var(--u) * 3), 15px);
+  --category-size: max(calc(var(--u) * 1.6), 10px);
+  --name-size: max(calc(var(--u) * 3), 15px);
+  --desc-size: max(calc(var(--u) * 1.85), 12px);
 }
 
 /* 디바이스 판별은 여기서만 한다 (TRD 5절: JS는 디바이스를 판별하지 않는다).
-   기본은 tablet-port(3:4). 세로 화면이 그보다 길쭉하면 signage(9:16), 더 길쭉하면 mobile(1:2). */
+   창 비율에 가장 가까운 디바이스를 고른다.
+   가로 → tablet-land(4:3, 2열). 세로 → 3:4 tablet-port, 9:16 signage, 1:2 mobile. */
 @media (orientation: landscape) {
   :root {
+    --device-w: 1920;
+    --device-h: 1440;
     --columns: 2;
     --bg: var(--bg-tablet-land, none);
     --frame: var(--frame-tablet-land, none);
@@ -32,12 +45,16 @@
 }
 @media (orientation: portrait) and (max-aspect-ratio: 21/32) {
   :root {
+    --device-w: 1080;
+    --device-h: 1920;
     --bg: var(--bg-signage, none);
     --frame: var(--frame-signage, none);
   }
 }
 @media (orientation: portrait) and (max-aspect-ratio: 17/32) {
   :root {
+    --device-w: 1080;
+    --device-h: 2160;
     --bg: var(--bg-mobile, none);
     --frame: var(--frame-mobile, none);
   }
@@ -57,6 +74,9 @@ body {
 
 /* 본문·가격: Pretendard — 작은 크기에서도 한글이 또렷하다 */
 body {
+  display: grid;
+  place-items: center;
+  height: 100dvh;
   background: var(--surface);
   color: var(--text);
   font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
@@ -65,24 +85,23 @@ body {
 
 .board {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
+  width: var(--board-w);
+  height: var(--board-h);
   display: flex;
   flex-direction: column;
   padding: var(--pad);
+  overflow: hidden;
   background-image: var(--bg);
-  background-size: cover;
-  background-position: center;
+  background-size: 100% 100%;
 }
 
-/* 테두리 PNG는 가운데가 투명한 오버레이다. 배경 위, 글자 아래가 아니라 맨 위에 얹되 클릭은 통과시킨다. */
+/* 테두리 PNG는 가운데가 투명한 오버레이다. 맨 위에 얹되 클릭은 통과시킨다. */
 .board::after {
   content: "";
   position: absolute;
   inset: 0;
   background-image: var(--frame);
-  background-size: cover;
-  background-position: center;
+  background-size: 100% 100%;
   pointer-events: none;
 }
 
@@ -98,15 +117,15 @@ body {
 .page-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 3vmin;
-  margin-top: 3vmin;
-  padding-top: 2.2vmin;
+  gap: 0 calc(var(--u) * 3);
+  margin-top: calc(var(--u) * 3);
+  padding-top: calc(var(--u) * 2.2);
   border-top: 1px solid var(--sub);
 }
 
 .page-tab {
   margin: 0;
-  padding: 0 0 0.6vmin;
+  padding: 0 0 calc(var(--u) * 0.6);
   border: 0;
   border-bottom: 1px solid transparent;
   background: none;
@@ -123,19 +142,24 @@ body {
   border-bottom-color: var(--accent);
 }
 
+/* 항목이 캔버스보다 많으면(작은 휴대폰 등) 목록만 스크롤한다. 매장명·탭은 고정. */
 .menu-list {
   flex: 1;
   min-height: 0;
-  margin-top: 4vmin;
+  margin-top: calc(var(--u) * 4);
   overflow-y: auto;
+  scrollbar-width: none;
+}
+.menu-list::-webkit-scrollbar {
+  display: none;
 }
 
 .category + .category {
-  margin-top: 4vmin;
+  margin-top: calc(var(--u) * 4);
 }
 
 .category-title {
-  margin: 0 0 2vmin;
+  margin: 0 0 calc(var(--u) * 2);
   color: var(--sub);
   font-size: var(--category-size);
   font-weight: 600;
@@ -144,8 +168,8 @@ body {
 
 .items {
   display: grid;
-  grid-template-columns: repeat(var(--columns), 1fr);
-  gap: 3.2vmin 7.5vmin;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: calc(var(--u) * 3.2) calc(var(--u) * 7.5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -154,10 +178,13 @@ body {
 .item-row {
   display: flex;
   align-items: baseline;
-  gap: 1.2vmin;
+  gap: calc(var(--u) * 1.2);
 }
 
 .item-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: var(--name-size);
   font-weight: 600;
   white-space: nowrap;
@@ -167,7 +194,8 @@ body {
 .item-leader {
   flex: 1;
   align-self: center;
-  margin: 0 0.6vmin;
+  min-width: calc(var(--u) * 2);
+  margin: 0 calc(var(--u) * 0.6);
   border-bottom: 1px dotted var(--sub);
 }
 
@@ -179,7 +207,7 @@ body {
 }
 
 .item-desc {
-  margin: 0.7vmin 0 0;
+  margin: calc(var(--u) * 0.7) 0 0;
   color: var(--sub);
   font-size: var(--desc-size);
   line-height: 1.3;
@@ -198,7 +226,8 @@ body {
 }
 
 .sold-out-label {
-  padding: 0.2vmin 0.9vmin;
+  flex: none;
+  padding: 1px calc(var(--u) * 0.9);
   border: 1px solid var(--sub);
   border-radius: 2px;
   color: var(--sub);
