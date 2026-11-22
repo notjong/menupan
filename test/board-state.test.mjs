@@ -20,3 +20,7 @@ test("shouldGroupItemsByCategoryInOrder", () => {
 test("shouldKeepCurrentPageIndexAfterUpdate", () => {
   assert.equal(resolvePageIndex(1, 3), 1);
 });
+
+test("shouldClampPageIndexWhenPagesShrink", () => {
+  assert.equal(resolvePageIndex(2, 2), 1);
+});

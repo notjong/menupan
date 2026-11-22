@@ -7,6 +7,6 @@ export function groupByCategory(items) {
   return [...groups].map(([category, groupItems]) => ({ category, items: groupItems }));
 }
 
-export function resolvePageIndex(currentIndex) {
-  return currentIndex;
+export function resolvePageIndex(currentIndex, pageCount) {
+  return Math.min(currentIndex, pageCount - 1);
 }
