@@ -483,13 +483,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T34 `_설정`의 값을 바꾸고 메뉴 시트는 건드리지 않는다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/write-settings.test.mjs` › `shouldWriteSettingsIntoSettingsSheet`
 - 대상: `src/write-settings.mjs` › `writeSettings(workbook, settings)`
 - 주어진 상황 → 기대 결과: 테마 `beige`인 워크북에 `{ theme: "cream", ... }` 저장 → 다시 파싱하면 `theme: "cream"`, 커피 시트 항목 그대로
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/write-settings.mjs` 없음)
 - Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/write-settings.mjs'`
 - Green 기록: Obvious Implementation. `_설정`을 행 배열로 읽어 항목이 같은 행의 값만 바꾸고 시트를 다시 만든다. 다른 시트는 건드리지 않는다. 남은 하드코딩: 시트 이름·항목 이름이 `parse-workbook.mjs`와 중복. 없는 행은 아직 안 만든다 — T35에서 풀림.
+- Refactor 기록: Move Constant: `SETTINGS_SHEET`, `SETTING_KEYS`를 `src/settings-sheet.mjs`로 옮겨 읽기·쓰기가 같은 이름을 쓴다. `npm test` 통과. 남은 하드코딩 없음.
 
 ### T35 없는 설정 행과 `_설정` 시트는 새로 만든다
 

@@ -124,7 +124,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 
 ### 7.2 설정 쓰기 — `src/write-settings.mjs`
 
-- [ ] **`_설정`의 값을 바꾸고 메뉴 시트는 건드리지 않는다** (`shouldWriteSettingsIntoSettingsSheet`)
+- [x] **`_설정`의 값을 바꾸고 메뉴 시트는 건드리지 않는다** (`shouldWriteSettingsIntoSettingsSheet`)
   - 테마 `beige` → `cream`으로 저장 → 다시 파싱하면 `cream`, 커피 시트 항목은 그대로
 - [ ] **없는 설정 행과 `_설정` 시트는 새로 만든다** (`shouldCreateSettingsSheetWhenMissing`)
   - `_설정` 없는 워크북에 저장 → `_설정` 시트가 생기고 다시 파싱하면 저장한 값

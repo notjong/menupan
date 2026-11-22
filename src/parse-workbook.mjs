@@ -1,9 +1,9 @@
 import * as XLSX from "xlsx";
 import { DEFAULT_DEVICE, DEVICES } from "./devices.mjs";
+import { SETTING_KEYS, SETTINGS_SHEET } from "./settings-sheet.mjs";
 
 const HIDDEN_SHEET_PREFIX = "_";
 const SOLD_OUT_MARK = "Y";
-const SETTINGS_SHEET = "_설정";
 const MANUAL_ADVANCE_SEC = 0;
 
 const MENU_COLUMNS = {
@@ -15,14 +15,6 @@ const MENU_COLUMNS = {
 };
 
 const SETTINGS_COLUMNS = { key: "항목", value: "값" };
-
-const SETTING_KEYS = {
-  storeName: "매장명",
-  theme: "테마",
-  autoAdvanceSec: "자동전환초",
-  device: "디바이스",
-  tagline: "영문태그",
-};
 
 function isMenuSheet(name) {
   return !name.startsWith(HIDDEN_SHEET_PREFIX);
