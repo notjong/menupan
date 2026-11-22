@@ -36,7 +36,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
   - `아메리카노 | 4500 | 깔끔한 산미 | (빈칸) | 에스프레소` → `{ name: "아메리카노", price: 4500, desc: "깔끔한 산미", soldOut: false, category: "에스프레소" }`
 - [x] **메뉴명이 빈 행은 건너뛴다** (`shouldSkipRowsWithEmptyName`)
   - 중간에 빈 줄이 있는 시트 → 빈 줄은 항목에 안 들어간다
-- [ ] **품절 칸이 `Y`면 품절로 표시한다** (`shouldMarkItemSoldOutWhenColumnIsY`)
+- [x] **품절 칸이 `Y`면 품절로 표시한다** (`shouldMarkItemSoldOutWhenColumnIsY`)
   - 품절 `Y` → `soldOut: true` / 빈칸 → `soldOut: false`
 - [ ] **품절 칸의 소문자·공백도 `Y`로 인정한다** (`shouldTreatLowercaseAndPaddedYAsSoldOut`)
   - `y`, `" Y "` → `soldOut: true` (점주의 입력 실수 대비)

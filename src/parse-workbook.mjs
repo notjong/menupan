@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 
 const HIDDEN_SHEET_PREFIX = "_";
+const SOLD_OUT_MARK = "Y";
 
 const MENU_COLUMNS = {
   name: "메뉴명",
@@ -23,7 +24,7 @@ function toMenuItem(row) {
     name: row[MENU_COLUMNS.name],
     price: row[MENU_COLUMNS.price],
     desc: row[MENU_COLUMNS.desc],
-    soldOut: row[MENU_COLUMNS.soldOut] === "Y",
+    soldOut: row[MENU_COLUMNS.soldOut] === SOLD_OUT_MARK,
     category: row[MENU_COLUMNS.category],
   };
 }
