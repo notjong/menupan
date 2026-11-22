@@ -131,7 +131,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 
 ### 7.3 입력 검증 — `src/validate-settings.mjs`
 
-- [ ] **올바른 입력은 다듬어서 받는다** (`shouldAcceptValidSettings`)
+- [x] **올바른 입력은 다듬어서 받는다** (`shouldAcceptValidSettings`)
   - 매장명 `" 빌런 커피 "`, 자동전환초 `"5"` → `storeName: "빌런 커피"`, `autoAdvanceSec: 5`
 - [ ] **모르는 테마·디바이스는 거절한다** (`shouldRejectUnknownThemeOrDevice`)
   - 테마 `purple`, 디바이스 `tv` → `ok: false`, 오류에 `theme`, `device`

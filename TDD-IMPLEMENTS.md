@@ -505,11 +505,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T36 올바른 입력은 다듬어서 받는다
 
-- 상태: TODO
+- 상태: DONE
 - 테스트: `test/validate-settings.test.mjs` › `shouldAcceptValidSettings`
 - 대상: `src/validate-settings.mjs` › `validateSettings(input, { themes, devices })`
 - 주어진 상황 → 기대 결과: 매장명 `" 빌런 커피 "`, 자동전환초 `"5"` → `{ ok: true, settings: { storeName: "빌런 커피", autoAdvanceSec: 5, ... } }`
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND`
+- Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/validate-settings.mjs'`
+- Green 기록: Fake It에 가까운 최소 구현. 글자는 `trim()`, 자동전환초는 `Number()`. 항상 `ok: true`. 남은 하드코딩: 검증 없음 — T37·T38에서 풀림.
+- Refactor 기록: 변경 없음. 검증이 아직 없어 정리할 중복이 없다. 일반화는 T37·T38이 강제한다.
 
 ### T37 모르는 테마·디바이스는 거절한다
 
