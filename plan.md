@@ -100,7 +100,7 @@ Excel은 한 번 저장할 때 파일 이벤트를 여러 번 낸다. 이를 300
 
 DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 
-- [ ] **같은 카테고리끼리 묶되 Excel 순서를 지킨다** (`shouldGroupItemsByCategoryInOrder`)
+- [x] **같은 카테고리끼리 묶되 Excel 순서를 지킨다** (`shouldGroupItemsByCategoryInOrder`)
   - `에스프레소, 에스프레소, 브루잉` → 그룹 2개: `에스프레소(2)`, `브루잉(1)`
 - [ ] **메뉴가 갱신돼도 보던 페이지에 머문다** (`shouldKeepCurrentPageIndexAfterUpdate`)
   - 2번째 페이지를 보는 중 갱신 → 계속 2번째 페이지
