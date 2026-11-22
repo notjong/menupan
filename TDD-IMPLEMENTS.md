@@ -398,14 +398,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T28 메뉴가 갱신돼도 보던 페이지에 머문다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/board-state.test.mjs` › `shouldKeepCurrentPageIndexAfterUpdate`
 - 대상: `public/board-state.mjs` › `resolvePageIndex(currentIndex, pageCount)`
 - 주어진 상황 → 기대 결과: `resolvePageIndex(1, 3)` → `1`
 - Red 기대 실패: `SyntaxError` (export `resolvePageIndex` 없음)
 - Red 기록: `SyntaxError: The requested module '../public/board-state.mjs' does not provide an export named 'resolvePageIndex'`
 - Green 기록: Fake It. 받은 `currentIndex`를 그대로 돌려준다. `pageCount`는 아직 안 써서 받지 않음(미사용 경고 방지). 남은 하드코딩: 범위 보정 없음 — T29에서 풀림.
-- Refactor 기록:
+- Refactor 기록: 변경 없음. Fake It은 테스트 하나로는 일반화할 근거가 없어 남긴다. T29가 삼각측량해서 풀 예정.
 
 ### T29 페이지가 줄면 마지막 페이지로 옮긴다
 

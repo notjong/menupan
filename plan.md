@@ -102,7 +102,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 
 - [x] **같은 카테고리끼리 묶되 Excel 순서를 지킨다** (`shouldGroupItemsByCategoryInOrder`)
   - `에스프레소, 에스프레소, 브루잉` → 그룹 2개: `에스프레소(2)`, `브루잉(1)`
-- [ ] **메뉴가 갱신돼도 보던 페이지에 머문다** (`shouldKeepCurrentPageIndexAfterUpdate`)
+- [x] **메뉴가 갱신돼도 보던 페이지에 머문다** (`shouldKeepCurrentPageIndexAfterUpdate`)
   - 2번째 페이지를 보는 중 갱신 → 계속 2번째 페이지
 - [ ] **페이지가 줄면 마지막 페이지로 옮긴다** (`shouldClampPageIndexWhenPagesShrink`)
   - 3번째 페이지를 보는 중 시트 삭제로 2페이지가 됨 → 2번째 페이지
