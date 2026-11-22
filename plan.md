@@ -135,7 +135,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
   - 매장명 `" 빌런 커피 "`, 자동전환초 `"5"` → `storeName: "빌런 커피"`, `autoAdvanceSec: 5`
 - [x] **모르는 테마·디바이스는 거절한다** (`shouldRejectUnknownThemeOrDevice`)
   - 테마 `purple`, 디바이스 `tv` → `ok: false`, 오류에 `theme`, `device`
-- [ ] **자동전환초는 0 이상 정수만 받는다** (`shouldRejectInvalidAutoAdvanceSec`)
+- [x] **자동전환초는 0 이상 정수만 받는다** (`shouldRejectInvalidAutoAdvanceSec`)
   - `-1`, `1.5`, `"빠르게"` → 모두 `ok: false`
 
 ### 7.4 로그인 — `src/admin-auth.mjs`
