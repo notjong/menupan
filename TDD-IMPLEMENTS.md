@@ -409,14 +409,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T29 페이지가 줄면 마지막 페이지로 옮긴다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/board-state.test.mjs` › `shouldClampPageIndexWhenPagesShrink`
 - 대상: `public/board-state.mjs` › `resolvePageIndex`
 - 주어진 상황 → 기대 결과: `resolvePageIndex(2, 2)` → `1`
 - Red 기대 실패: `AssertionError` (T28의 Fake It 또는 그대로 반환하는 구현이 `2`를 냄)
 - Red 기록: `AssertionError: actual 2, expected 1` (T28 Fake It이 그대로 반환)
 - Green 기록: Obvious Implementation. `Math.min(currentIndex, pageCount - 1)`. T28 Fake It 제거. 참고: `pageCount`가 0이면 `-1`이 나온다(테스트 항목 없음, 행위 변경이라 리팩터링에서 다루지 않음).
-- Refactor 기록:
+- Refactor 기록: 변경 없음. 한 줄 계산이고 중복·매직 값 없음. 남은 하드코딩 없음. 미결: 페이지 0개일 때 `-1`.
 
 ### T30 자동 전환은 마지막 다음에 처음으로 돌아간다
 
