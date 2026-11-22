@@ -1,0 +1,11 @@
+{
+  "name": "menupan",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Excel 연동 및 SSE 개념을 적용한 카페 메뉴판 웹 페이지",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test"
+  }
+}

@@ -32,13 +32,13 @@ TODO ──/tdd-red──▶ RED ──/tdd-green──▶ GREEN ──/tdd-refa
 
 ## T00 프로젝트 준비 (구조적 준비, 테스트 없음)
 
-- 상태: TODO
+- 상태: DONE
 - 내용: `/tdd-red`가 처음 실행될 때 `package.json`이 없으면 만든다.
   - `"type": "module"`
   - `"scripts": { "start": "node server.mjs", "test": "node --test" }`
   - 의존성은 넣지 않는다. 처음 필요한 항목에서 설치한다.
 - 커밋: `chore: package.json 추가` / `[STRUCTURAL] T00`
-- 기록:
+- 기록: `package.json` 생성(의존성 없음). `npm test` → `tests 0`, exit 0. 테스트 없는 항목이라 RED/GREEN을 건너뛰고 DONE.
 
 ---
 
