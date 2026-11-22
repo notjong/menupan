@@ -55,6 +55,10 @@ function toAutoAdvanceSec(value) {
   return Number.isFinite(value) && value > 0 ? value : MANUAL_ADVANCE_SEC;
 }
 
+function toTheme(value, { themes, defaultTheme }) {
+  return themes.includes(value) ? value : defaultTheme;
+}
+
 function readSettings(sheet) {
   if (!sheet) return {};
   return Object.fromEntries(
@@ -66,7 +70,7 @@ export function parseWorkbook(workbook, { themes = [], defaultTheme } = {}) {
   const settings = readSettings(workbook.Sheets[SETTINGS_SHEET]);
   return {
     storeName: settings[SETTING_KEYS.storeName] ?? "",
-    theme: themes.includes(settings[SETTING_KEYS.theme]) ? settings[SETTING_KEYS.theme] : defaultTheme,
+    theme: toTheme(settings[SETTING_KEYS.theme], { themes, defaultTheme }),
     autoAdvanceSec: toAutoAdvanceSec(settings[SETTING_KEYS.autoAdvanceSec]),
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,

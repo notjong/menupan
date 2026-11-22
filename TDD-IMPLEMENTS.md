@@ -220,14 +220,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T15 없는 테마 이름이면 기본 테마로 바꾼다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldFallBackToDefaultThemeWhenUnknown`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: `테마 | purple`, 옵션 `{ themes: ["cream", "beige"], defaultTheme: "beige" }` → `theme: "beige"`
 - Red 기대 실패: `AssertionError` (`"purple"`이 나옴)
 - Red 기록: `AssertionError: actual 'purple', expected 'beige'`
 - Green 기록: Obvious Implementation. `themes.includes(값)`이 아니면 `defaultTheme`. 옵션 `themes = []` 추가. 정리 거리: 같은 설정값 접근 2번.
-- Refactor 기록:
+- Refactor 기록: Extract Function `toTheme`(설정값 중복 접근 제거, `toPrice`·`toAutoAdvanceSec`와 같은 모양). `npm test` 통과. 남은 하드코딩 없음.
 
 ### 2-4. 실제 샘플 파일
 

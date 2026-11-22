@@ -53,7 +53,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
   - `_설정` 없음 → 매장명 `""`, 기본 테마, 자동전환 `0`(수동)
 - [x] **자동전환초가 음수거나 글자면 0(수동)으로 본다** (`shouldClampNegativeAutoAdvanceToZero`)
   - `-3`, `"빠르게"` → `autoAdvanceSec: 0`
-- [ ] **없는 테마 이름이면 기본 테마로 바꾼다** (`shouldFallBackToDefaultThemeWhenUnknown`)
+- [x] **없는 테마 이름이면 기본 테마로 바꾼다** (`shouldFallBackToDefaultThemeWhenUnknown`)
   - `테마=purple` → 기본 테마
 
 ### 2-4. 실제 샘플 파일
