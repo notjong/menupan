@@ -42,7 +42,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
   - `y`, `" Y "` → `soldOut: true` (점주의 입력 실수 대비)
 - [x] **가격이 숫자가 아니면 가격을 비워 둔다** (`shouldSetPriceNullWhenNotNumeric`)
   - `"시가"`, `"4,500원"` → `price: null` (화면에 가격 안 보임)
-- [ ] **카테고리가 빈칸이면 빈 문자열로 둔다** (`shouldDefaultCategoryToEmptyString`)
+- [x] **카테고리가 빈칸이면 빈 문자열로 둔다** (`shouldDefaultCategoryToEmptyString`)
   - 카테고리 빈칸 → `category: ""` (소제목 없이 표시)
 
 ### 2-3. `_설정` 시트
