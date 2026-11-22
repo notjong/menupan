@@ -472,11 +472,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T33 `_설정`의 영문태그를 읽는다
 
-- 상태: TODO
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldReadTaglineFromSettingsSheet`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: `영문태그 = SPECIALTY COFFEE` → `tagline: "SPECIALTY COFFEE"`, 없으면 `""`
 - Red 기대 실패: `AssertionError` (`tagline`이 `undefined`)
+- Red 기록: `AssertionError: undefined !== 'SPECIALTY COFFEE'`
+- Green 기록: Obvious Implementation. `SETTING_KEYS.tagline = "영문태그"`, 없으면 `""`(매장명과 같은 규칙). 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 매장명과 같은 한 줄이고 중복·매직 값 없음.
 
 ### T34 `_설정`의 값을 바꾸고 메뉴 시트는 건드리지 않는다
 

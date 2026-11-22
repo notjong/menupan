@@ -119,7 +119,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
   - `디바이스 = mobile` → `device: "mobile"`
 - [x] **모르는 디바이스는 기본 디바이스로 바꾼다** (`shouldFallBackToDefaultDeviceWhenUnknown`)
   - `디바이스 = tv` 또는 없음 → `device: "tablet-port"`
-- [ ] **`_설정`의 영문태그를 읽는다** (`shouldReadTaglineFromSettingsSheet`)
+- [x] **`_설정`의 영문태그를 읽는다** (`shouldReadTaglineFromSettingsSheet`)
   - `영문태그 = SPECIALTY COFFEE` → `tagline: "SPECIALTY COFFEE"`, 없으면 `""`
 
 ### 7.2 설정 쓰기 — `src/write-settings.mjs`

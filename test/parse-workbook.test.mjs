@@ -181,3 +181,14 @@ test("shouldFallBackToDefaultDeviceWhenUnknown", () => {
   assert.equal(parseWorkbook(withDevice, THEME_OPTIONS).device, "tablet-port");
   assert.equal(parseWorkbook(withoutSettings, THEME_OPTIONS).device, "tablet-port");
 });
+
+test("shouldReadTaglineFromSettingsSheet", () => {
+  const withTagline = makeWorkbook({
+    커피: [MENU_HEADER],
+    _설정: [SETTINGS_HEADER, ["영문태그", "SPECIALTY COFFEE"]],
+  });
+  const withoutSettings = makeWorkbook({ 커피: [MENU_HEADER] });
+
+  assert.equal(parseWorkbook(withTagline, THEME_OPTIONS).tagline, "SPECIALTY COFFEE");
+  assert.equal(parseWorkbook(withoutSettings, THEME_OPTIONS).tagline, "");
+});
