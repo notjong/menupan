@@ -118,3 +118,15 @@ test("shouldSaveValidSettingsWithSession", async (t) => {
   assert.equal(saveSettings.mock.callCount(), 1);
   assert.deepEqual(saveSettings.mock.calls[0].arguments[0], { ...next, autoAdvanceSec: 5 });
 });
+
+test("shouldRejectInvalidSettingsWith400", async (t) => {
+  const saveSettings = t.mock.fn();
+  const baseUrl = await startServer(t, createAdminApp({ saveSettings }));
+  const cookie = await loginCookie(baseUrl);
+
+  const response = await putSettings(baseUrl, cookie, { ...CURRENT_SETTINGS, theme: "purple" });
+
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).errors[0].field, "theme");
+  assert.equal(saveSettings.mock.callCount(), 0);
+});

@@ -593,11 +593,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T44 잘못된 설정은 400이고 저장하지 않는다
 
-- 상태: TODO
+- 상태: DONE
 - 테스트: `test/app.test.mjs` › `shouldRejectInvalidSettingsWith400`
 - 대상: `src/app.mjs` › `PUT /api/admin/settings`
 - 주어진 상황 → 기대 결과: 테마 `purple` → 400, 본문 `errors`, `saveSettings` 0번
 - Red 기대 실패: `AssertionError` (204)
+- Red 기록: `AssertionError: 204 !== 400`
+- Green 기록: Obvious Implementation. 검증 실패면 `400 { errors }`로 끝내고 저장하지 않는다. 남은 하드코딩 없음.
+- Refactor 기록: 변경 없음. 가드 한 줄이고 중복·매직 값 없음.
 
 ### T45 로그아웃하면 세션이 끊긴다
 

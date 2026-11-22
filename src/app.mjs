@@ -39,6 +39,7 @@ export function createApp({ getMenu, hub, auth, getThemes, saveSettings }) {
   });
   app.put("/api/admin/settings", requireSession, express.json(), (req, res) => {
     const result = validateSettings(req.body ?? {}, { themes: getThemes(), devices: DEVICES });
+    if (!result.ok) return res.status(400).json({ errors: result.errors });
     saveSettings(result.settings);
     res.sendStatus(204);
   });
