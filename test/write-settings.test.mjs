@@ -37,3 +37,13 @@ test("shouldWriteSettingsIntoSettingsSheet", () => {
   assert.equal(menu.storeName, "빌런 커피");
   assert.deepEqual(menu.pages, menuBefore);
 });
+
+test("shouldCreateSettingsSheetWhenMissing", () => {
+  const workbook = makeWorkbook({ 커피: [MENU_HEADER] });
+
+  writeSettings(workbook, NEW_SETTINGS);
+
+  const { storeName, tagline, theme, device, autoAdvanceSec } = parseWorkbook(workbook, THEME_OPTIONS);
+  assert.equal(workbook.SheetNames.at(-1), "_설정");
+  assert.deepEqual({ storeName, tagline, theme, device, autoAdvanceSec }, NEW_SETTINGS);
+});
