@@ -29,3 +29,11 @@ test("shouldExcludeSheetsStartingWithUnderscore", () => {
 
   assert.deepEqual(menu.pages.map((page) => page.name), ["커피"]);
 });
+
+test("shouldKeepWorkbookSheetOrder", () => {
+  const workbook = makeWorkbook({ 음료: [MENU_HEADER], 커피: [MENU_HEADER] });
+
+  const menu = parseWorkbook(workbook);
+
+  assert.deepEqual(menu.pages.map((page) => page.name), ["음료", "커피"]);
+});

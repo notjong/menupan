@@ -27,7 +27,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
   - 시트 `커피`, `디저트` → 페이지 2개, 이름 `커피`, `디저트`
 - [x] **`_`로 시작하는 시트는 페이지에서 뺀다** (`shouldExcludeSheetsStartingWithUnderscore`)
   - 시트 `커피`, `_설정` → 페이지는 `커피` 1개뿐
-- [ ] **페이지 순서는 Excel 탭 순서를 따른다** (`shouldKeepWorkbookSheetOrder`)
+- [x] **페이지 순서는 Excel 탭 순서를 따른다** (`shouldKeepWorkbookSheetOrder`)
   - 탭 순서 `음료`, `커피` → 페이지 순서도 `음료`, `커피`
 
 ### 2-2. 행 → 메뉴 항목

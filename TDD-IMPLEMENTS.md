@@ -104,14 +104,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T05 페이지 순서는 Excel 탭 순서를 따른다
 
-- 상태: TODO
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldKeepWorkbookSheetOrder`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 탭 순서 `음료`, `커피` → 페이지 이름 `["음료", "커피"]`
 - Red 기대 실패: `AssertionError`. 앞 항목 구현이 이미 순서를 지키면 바로 통과할 수 있다. 그때는 `/tdd-red` 규칙대로 멈추고 사용자에게 확인한다.
-- Red 기록:
-- Green 기록:
-- Refactor 기록:
+- Red 기록: Red 실패 없음: 첫 실행에서 통과. T03 구현이 `SheetNames` 순서를 그대로 쓴다. 테스트는 회귀 테스트로 유지.
+- Green 기록: 구현 없음(이미 통과).
+- Refactor 기록: 변경 없음. 제품 코드를 건드리지 않았다.
 
 ### 2-2. 행 → 메뉴 항목
 
