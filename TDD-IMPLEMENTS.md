@@ -375,6 +375,7 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 - 주어진 상황 → 기대 결과: `shouldReload("data/~$menu.xlsx")` → `false`, `shouldReload("data/menu.xlsx")` → `true`
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/watch-filter.mjs` 없음)
 - 후속: 이 항목이 `DONE`이 되면 `server.mjs`에서 부품을 조립한다(chokidar 설치, `debounce` + `shouldReload` + `createReloader` + `createApp`). 조립은 새 행위가 없는 연결 작업이므로 별도 구조적 커밋으로 하고, `npm start`로 직접 확인한다.
+- 후속 기록: `server.mjs` 조립 완료(`chokidar` ^6.0.0 설치). `npm start` 확인: `/api/menu`가 커피 6·디저트 5·음료 4개 항목을 준다. `touch`와 Excel식 저장(삭제 후 이름 바꾸기) 모두 `/events`로 `event: menu-updated`가 1번 온다. `public/assets/`가 없어 테마 목록이 비어 있고, 그래서 `theme`이 응답에 없다(화면 작업에서 해결).
 - Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/watch-filter.mjs'`
 - Green 기록: Obvious Implementation. 파일 이름(`basename`)이 `~$`로 시작하면 `false`. 남은 하드코딩: 매직 문자열 `"~$"`.
 - Refactor 기록: Introduce Constant `EXCEL_LOCK_FILE_PREFIX`. `npm test` 통과. 남은 하드코딩 없음.
