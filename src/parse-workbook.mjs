@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import { DEFAULT_DEVICE, DEVICES } from "./devices.mjs";
-import { SETTING_KEYS, SETTINGS_SHEET } from "./settings-sheet.mjs";
+import { SETTING_KEYS, SETTINGS_COLUMNS, SETTINGS_SHEET } from "./settings-sheet.mjs";
 
 const HIDDEN_SHEET_PREFIX = "_";
 const SOLD_OUT_MARK = "Y";
@@ -13,8 +13,6 @@ const MENU_COLUMNS = {
   soldOut: "품절",
   category: "카테고리",
 };
-
-const SETTINGS_COLUMNS = { key: "항목", value: "값" };
 
 function isMenuSheet(name) {
   return !name.startsWith(HIDDEN_SHEET_PREFIX);

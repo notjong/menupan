@@ -8,3 +8,5 @@ export const SETTING_KEYS = {
   device: "디바이스",
   autoAdvanceSec: "자동전환초",
 };
+
+export const SETTINGS_COLUMNS = { key: "항목", value: "값" };

@@ -494,13 +494,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T35 없는 설정 행과 `_설정` 시트는 새로 만든다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/write-settings.test.mjs` › `shouldCreateSettingsSheetWhenMissing`
 - 대상: `src/write-settings.mjs` › `writeSettings`
 - 주어진 상황 → 기대 결과: `_설정` 없는 워크북에 저장 → `_설정` 시트가 마지막에 생기고 다시 파싱하면 저장한 값
 - Red 기대 실패: `TypeError` (없는 시트를 읽음)
 - Red 기록: `AssertionError: '커피' !== '_설정'` (기대한 TypeError가 아니었다: `sheet_to_json(undefined)`가 빈 배열을 내고, 시트가 SheetNames에 안 들어감)
 - Green 기록: Obvious Implementation. 시트가 없으면 머리행 `["항목", "값"]`부터 시작해 마지막에 붙인다. 없는 항목 행은 아래에 추가한다. 남은 하드코딩: 머리행 문자열이 `parse-workbook.mjs`의 `SETTINGS_COLUMNS`와 중복.
+- Refactor 기록: (1) Move Constant `SETTINGS_COLUMNS` → `src/settings-sheet.mjs`(머리행 중복 제거) (2) Extract Function `readRows`, `setValue` (3) Introduce Constant `KEY_CELL`, `VALUE_CELL`, `HEADER_ROW`. `npm test` 통과. 남은 하드코딩 없음.
 
 ### T36 올바른 입력은 다듬어서 받는다
 
