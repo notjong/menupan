@@ -35,10 +35,20 @@ test("shouldRespondEventStreamHeadersOnEvents", async (t) => {
   assert.equal(response.headers.get("cache-control"), "no-cache");
 });
 
-function createAdminApp() {
+const CURRENT_SETTINGS = {
+  storeName: "빌런 커피",
+  tagline: "SPECIALTY COFFEE",
+  theme: "cream",
+  device: "signage",
+  autoAdvanceSec: 0,
+};
+
+function createAdminApp(overrides = {}) {
   return createApp({
-    getMenu: () => ({ pages: [] }),
+    getMenu: () => ({ ...CURRENT_SETTINGS, pages: [] }),
+    getThemes: () => ["beige", "cream"],
     auth: createAdminAuth({ username: "admin", password: "1234" }),
+    ...overrides,
   });
 }
 
@@ -67,4 +77,23 @@ test("shouldLoginAndSetSessionCookie", async (t) => {
   assert.equal(ok.status, 200);
   assert.match(ok.headers.get("set-cookie"), /HttpOnly/i);
   assert.equal(wrong.status, 401);
+});
+
+async function loginCookie(baseUrl) {
+  const response = await postJson(`${baseUrl}/api/admin/login`, { username: "admin", password: "1234" });
+  return response.headers.get("set-cookie").split(";")[0];
+}
+
+test("shouldReturnCurrentSettingsAndOptions", async (t) => {
+  const baseUrl = await startServer(t, createAdminApp());
+  const cookie = await loginCookie(baseUrl);
+
+  const response = await fetch(`${baseUrl}/api/admin/settings`, { headers: { cookie } });
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    settings: CURRENT_SETTINGS,
+    themes: ["beige", "cream"],
+    devices: ["mobile", "tablet-port", "tablet-land", "signage"],
+  });
 });
