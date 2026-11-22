@@ -150,14 +150,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T09 품절 칸의 소문자·공백도 `Y`로 인정한다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldTreatLowercaseAndPaddedYAsSoldOut`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 품절 `y` → `true`, 품절 `" Y "` → `true`
 - Red 기대 실패: `AssertionError` (`false`가 나옴)
 - Red 기록: `AssertionError: actual [false, false], expected [true, true]`
 - Green 기록: Obvious Implementation. 값을 문자열로 바꾼 뒤 `trim()` + `toUpperCase()` 후 비교. 남은 하드코딩 없음. 정리 거리: `toMenuItem` 안의 긴 정규화 식.
-- Refactor 기록:
+- Refactor 기록: Extract Function `isSoldOutMark`. `npm test` 통과. 남은 하드코딩 없음.
 
 ### T10 가격이 숫자가 아니면 `null`로 둔다
 

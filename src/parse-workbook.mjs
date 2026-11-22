@@ -19,12 +19,16 @@ function hasMenuName(row) {
   return Boolean(row[MENU_COLUMNS.name]);
 }
 
+function isSoldOutMark(value) {
+  return String(value ?? "").trim().toUpperCase() === SOLD_OUT_MARK;
+}
+
 function toMenuItem(row) {
   return {
     name: row[MENU_COLUMNS.name],
     price: row[MENU_COLUMNS.price],
     desc: row[MENU_COLUMNS.desc],
-    soldOut: String(row[MENU_COLUMNS.soldOut] ?? "").trim().toUpperCase() === SOLD_OUT_MARK,
+    soldOut: isSoldOutMark(row[MENU_COLUMNS.soldOut]),
     category: row[MENU_COLUMNS.category],
   };
 }
