@@ -369,7 +369,7 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T26 Excel 임시 잠금 파일은 무시한다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/watch-filter.test.mjs` › `shouldIgnoreExcelLockFiles`
 - 대상: `src/watch-filter.mjs` › `shouldReload(path)`
 - 주어진 상황 → 기대 결과: `shouldReload("data/~$menu.xlsx")` → `false`, `shouldReload("data/menu.xlsx")` → `true`
@@ -377,7 +377,7 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 - 후속: 이 항목이 `DONE`이 되면 `server.mjs`에서 부품을 조립한다(chokidar 설치, `debounce` + `shouldReload` + `createReloader` + `createApp`). 조립은 새 행위가 없는 연결 작업이므로 별도 구조적 커밋으로 하고, `npm start`로 직접 확인한다.
 - Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/watch-filter.mjs'`
 - Green 기록: Obvious Implementation. 파일 이름(`basename`)이 `~$`로 시작하면 `false`. 남은 하드코딩: 매직 문자열 `"~$"`.
-- Refactor 기록:
+- Refactor 기록: Introduce Constant `EXCEL_LOCK_FILE_PREFIX`. `npm test` 통과. 남은 하드코딩 없음.
 
 ---
 
