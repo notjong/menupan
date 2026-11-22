@@ -103,3 +103,11 @@ test("shouldSetPriceNullWhenNotNumeric", () => {
 
   assert.deepEqual(items.map((item) => item.price), [null, null]);
 });
+
+test("shouldDefaultCategoryToEmptyString", () => {
+  const workbook = makeWorkbook({ 커피: [MENU_HEADER, ["아메리카노", 4500]] });
+
+  const [item] = parseWorkbook(workbook).pages[0].items;
+
+  assert.equal(item.category, "");
+});

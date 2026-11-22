@@ -172,13 +172,13 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T11 카테고리가 빈칸이면 빈 문자열로 둔다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/parse-workbook.test.mjs` › `shouldDefaultCategoryToEmptyString`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 카테고리 빈칸 → `category: ""`
 - Red 기대 실패: `AssertionError` (`undefined`가 나옴)
-- Red 기록:
-- Green 기록:
+- Red 기록: `AssertionError: actual undefined, expected ''`
+- Green 기록: Obvious Implementation. `?? ""`. 남은 하드코딩 없음.
 - Refactor 기록:
 
 ### 2-3. `_설정` 시트

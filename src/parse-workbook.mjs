@@ -33,7 +33,7 @@ function toMenuItem(row) {
     price: toPrice(row[MENU_COLUMNS.price]),
     desc: row[MENU_COLUMNS.desc],
     soldOut: isSoldOutMark(row[MENU_COLUMNS.soldOut]),
-    category: row[MENU_COLUMNS.category],
+    category: row[MENU_COLUMNS.category] ?? "",
   };
 }
 
