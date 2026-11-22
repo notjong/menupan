@@ -302,14 +302,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T21 창을 닫은 브라우저는 목록에서 뺀다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/sse-hub.test.mjs` › `shouldRemoveClientOnClose`
 - 대상: `src/sse-hub.mjs` › `createSseHub`
 - 주어진 상황 → 기대 결과: 응답 2개 `add`, 1개가 `close` 이벤트 발생, `broadcast` → 남은 1개만 `write` 받음
 - Red 기대 실패: `AssertionError` (닫힌 응답에도 `write`됨)
 - Red 기록: `AssertionError: actual 1, expected 0` (닫힌 응답에도 write됨)
 - Green 기록: Obvious Implementation. `add`에서 `res.on("close")`로 Set에서 지운다. 남은 하드코딩 없음.
-- Refactor 기록:
+- Refactor 기록: 변경 없음. 리스너 한 줄이고 중복·매직 값 없음. 테스트의 `fakeResponse`는 T20에서 이미 공유 중.
 
 ---
 
