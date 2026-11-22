@@ -347,14 +347,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T24 Excel을 읽다 실패하면 직전 메뉴를 유지한다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/reloader.test.mjs` › `shouldKeepPreviousDataWhenParseFails`
 - 대상: `src/reloader.mjs` › `createReloader`
 - 주어진 상황 → 기대 결과: 첫 `reload()`는 정상 데이터 A, 두 번째 `reload()`에서 `readWorkbook`이 예외를 던짐 → `getMenu()`는 여전히 A, `log`가 1번 호출됨
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/reloader.mjs` 없음)
 - Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/reloader.mjs'`
 - Green 기록: Obvious Implementation. `try`에서 읽기·파싱이 모두 성공할 때만 `menu`를 바꾸고, 실패하면 `log(error)`. `hub`는 아직 쓰지 않아 받지 않음(T25). 남은 하드코딩 없음.
-- Refactor 기록:
+- Refactor 기록: 변경 없음. try/catch 하나이고 중복·매직 값 없음.
 
 ### T25 읽기에 실패하면 브라우저에 알리지 않는다
 
