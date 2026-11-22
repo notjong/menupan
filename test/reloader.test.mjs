@@ -28,3 +28,19 @@ test("shouldKeepPreviousDataWhenParseFails", (t) => {
   assert.equal(reloader.getMenu(), MENU_A);
   assert.equal(log.mock.callCount(), 1);
 });
+
+test("shouldNotBroadcastWhenParseFails", (t) => {
+  const hub = { broadcast: t.mock.fn() };
+  const reloader = createReloader({
+    readWorkbook: readOkThenFail(t),
+    parse: () => MENU_A,
+    hub,
+    log: () => {},
+  });
+
+  reloader.reload();
+  assert.equal(hub.broadcast.mock.callCount(), 1);
+
+  reloader.reload();
+  assert.equal(hub.broadcast.mock.callCount(), 1);
+});
