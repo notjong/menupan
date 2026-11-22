@@ -140,7 +140,7 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
 
 ### 7.4 로그인 — `src/admin-auth.mjs`
 
-- [ ] **맞는 계정에만 세션을 준다** (`shouldIssueSessionOnlyForCorrectCredentials`)
+- [x] **맞는 계정에만 세션을 준다** (`shouldIssueSessionOnlyForCorrectCredentials`)
   - `admin/1234` → 토큰, 그 토큰은 유효. `admin/0000` → `null`
 
 ### 7.5 어드민 API — `src/app.mjs`

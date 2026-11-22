@@ -538,13 +538,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T39 맞는 계정에만 세션을 준다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/admin-auth.test.mjs` › `shouldIssueSessionOnlyForCorrectCredentials`
 - 대상: `src/admin-auth.mjs` › `createAdminAuth({ username, password })`
 - 주어진 상황 → 기대 결과: `login("admin", "1234")` → 토큰, `isValid(토큰) === true`. `login("admin", "0000")` → `null`
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND`
 - Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/admin-auth.mjs'`
 - Green 기록: Obvious Implementation. 계정이 맞으면 `randomUUID()` 토큰을 메모리 `Set`에 넣어 돌려준다. 남은 정리 거리: 문자열을 `!==`로 비교한다(응답 시간으로 비밀번호를 추측할 여지).
+- Refactor 기록: Extract Function `sameSecret`: SHA-256 해시를 `timingSafeEqual`로 비교한다. 아이디·비밀번호를 둘 다 비교한 뒤 판단해 어느 쪽이 틀렸는지 시간으로 드러나지 않는다. 결과는 같다. `npm test` 통과.
 
 ### T40 세션 없이 설정 API를 부르면 401
 
