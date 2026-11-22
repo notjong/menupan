@@ -560,13 +560,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T41 로그인하면 HttpOnly 세션 쿠키를 준다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/app.test.mjs` › `shouldLoginAndSetSessionCookie`
 - 대상: `src/app.mjs` › `POST /api/admin/login`
 - 주어진 상황 → 기대 결과: 맞는 계정 → 200, `Set-Cookie`에 `HttpOnly`. 틀린 계정 → 401
 - Red 기대 실패: `AssertionError` (404)
 - Red 기록: `AssertionError: 404 !== 200`
 - Green 기록: Obvious Implementation. `POST /api/admin/login`이 `auth.login`으로 토큰을 받아 `admin_session` 쿠키(HttpOnly, SameSite=Strict)로 준다. 틀리면 401. 남은 하드코딩: 쿠키 이름 문자열.
+- Refactor 기록: Introduce Constant `SESSION_COOKIE`, `SESSION_COOKIE_OPTIONS`. 세션 확인(T42)과 로그아웃(T45)이 같은 이름을 쓴다. `npm test` 통과.
 
 ### T42 세션이 있으면 현재 설정과 선택지를 준다
 

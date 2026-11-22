@@ -6,6 +6,9 @@ const SSE_HEADERS = {
   Connection: "keep-alive",
 };
 
+const SESSION_COOKIE = "admin_session";
+const SESSION_COOKIE_OPTIONS = { httpOnly: true, sameSite: "strict", path: "/" };
+
 export function createApp({ getMenu, hub, auth }) {
   const app = express();
   app.get("/api/menu", (_req, res) => res.json(getMenu()));
@@ -18,7 +21,7 @@ export function createApp({ getMenu, hub, auth }) {
   app.post("/api/admin/login", express.json(), (req, res) => {
     const token = auth.login(req.body?.username, req.body?.password);
     if (!token) return res.sendStatus(401);
-    res.cookie("admin_session", token, { httpOnly: true, sameSite: "strict", path: "/" });
+    res.cookie(SESSION_COOKIE, token, SESSION_COOKIE_OPTIONS);
     res.sendStatus(200);
   });
   return app;
