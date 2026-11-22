@@ -1,0 +1,16 @@
+/* cream — 색은 docs/TRD.md 6절, surface는 bg PNG의 평균색(PNG를 받기 전 잠깐 보이는 바탕). */
+:root {
+  --text: #3c3120;
+  --sub: #897354;
+  --accent: #b5602f;
+  --surface: #ded3ba;
+
+  --bg-mobile: url("/assets/cream/bg-mobile.png");
+  --bg-tablet-port: url("/assets/cream/bg-tablet-port.png");
+  --bg-tablet-land: url("/assets/cream/bg-tablet-land.png");
+  --bg-signage: url("/assets/cream/bg-signage.png");
+  --frame-mobile: url("/assets/cream/frame-mobile.png");
+  --frame-tablet-port: url("/assets/cream/frame-tablet-port.png");
+  --frame-tablet-land: url("/assets/cream/frame-tablet-land.png");
+  --frame-signage: url("/assets/cream/frame-signage.png");
+}

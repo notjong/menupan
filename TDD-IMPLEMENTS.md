@@ -430,3 +430,14 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 - Red 기록: `SyntaxError: ... does not provide an export named 'nextPageIndex'`. import 실패라 같은 파일의 T27~T29 테스트도 이번 실행에서는 돌지 않았다(전체 27개로 집계).
 - Green 기록: Obvious Implementation. `(currentIndex + 1) % pageCount`. 남은 하드코딩 없음.
 - Refactor 기록: 변경 없음. 나머지 연산 한 줄이고 중복·매직 값 없음.
+
+---
+
+## 7. 화면 (테스트 항목 없음, 브라우저 확인)
+
+- 구조 변경: `src/format.mjs` → `public/format.mjs`. 브라우저가 `formatPrice`를 import하려면 `public/`에 있어야 한다. `npm test` 30/30 통과.
+- 만든 것: `public/index.html`, `public/client.js`, `public/templates/board-grid.css`, 테마 CSS 4개(`light-olive`, `deep-green`, `cream`, `beige`), `public/assets/<위 4개>/`.
+- 테마: TRD 7절 1번 임시 규칙대로 `assets/<t>/`와 `templates/<t>.css`가 둘 다 있는 4종만 넣었다. `cafe-dark`, `bistro-light`, `forest-*`는 PNG가 `design/project/assets/`에 있지만 색 값이 없어 넣지 않았다. 색을 정하면 CSS를 하나 만들고 폴더를 복사하면 된다. 기본 테마는 여전히 미결이며 지금은 이름순 첫 번째(`beige`)다.
+- 디바이스: `board-grid.css`의 미디어쿼리만 판별한다. 가로 → `tablet-land`(2열), 세로 비율 ≤ 17/32 → `mobile`, ≤ 21/32 → `signage`, 그 외 `tablet-port`.
+- 페이지 0개: `resolvePageIndex`가 `-1`을 내는 경우는 `client.js`가 빈 안내 문구로 처리한다(함수는 그대로).
+- 확인(headless Chrome + CDP, 2026-11-22): 4개 디바이스 모두 배경·테두리 PNG와 열 수가 맞다. Excel 수정 후 1초 안에 반영됨 — 가격 4,500→4,800원, 카페라떼 `품절=Y`, `시즌` 시트 추가로 탭 4개, 테마 `deep-green`→`cream`, `자동전환초=5`로 5초마다 커피→디저트→음료. 확인 뒤 `data/menu.xlsx`는 원본으로 되돌렸다(shasum 동일).

@@ -1,0 +1,213 @@
+/* 공통 레이아웃. 테마 CSS(<theme>.css)는 아래 변수 값만 바꾼다.
+   단위는 1vmin = 화면 짧은 변의 1%. 디자인 번들의 u(짧은 변) 비율을 그대로 옮겼다. */
+
+:root {
+  /* 테마가 없을 때(assets 폴더가 비었을 때) 쓰는 무채색 기본값 */
+  --text: #222222;
+  --sub: #6b6b6b;
+  --accent: #222222;
+  --surface: #f4f3ef;
+
+  --pad: 8.5vmin;
+  --store-size: 5.8vmin;
+  --tab-size: 3vmin;
+  --category-size: 1.6vmin;
+  --name-size: 3vmin;
+  --desc-size: 1.85vmin;
+  --columns: 1;
+
+  /* 디바이스별 배경·테두리. 테마 CSS가 --bg-<디바이스>, --frame-<디바이스>를 정한다. */
+  --bg: var(--bg-tablet-port, none);
+  --frame: var(--frame-tablet-port, none);
+}
+
+/* 디바이스 판별은 여기서만 한다 (TRD 5절: JS는 디바이스를 판별하지 않는다).
+   기본은 tablet-port(3:4). 세로 화면이 그보다 길쭉하면 signage(9:16), 더 길쭉하면 mobile(1:2). */
+@media (orientation: landscape) {
+  :root {
+    --columns: 2;
+    --bg: var(--bg-tablet-land, none);
+    --frame: var(--frame-tablet-land, none);
+  }
+}
+@media (orientation: portrait) and (max-aspect-ratio: 21/32) {
+  :root {
+    --bg: var(--bg-signage, none);
+    --frame: var(--frame-signage, none);
+  }
+}
+@media (orientation: portrait) and (max-aspect-ratio: 17/32) {
+  :root {
+    --bg: var(--bg-mobile, none);
+    --frame: var(--frame-mobile, none);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+/* 본문·가격: Pretendard — 작은 크기에서도 한글이 또렷하다 */
+body {
+  background: var(--surface);
+  color: var(--text);
+  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+  overflow: hidden;
+}
+
+.board {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pad);
+  background-image: var(--bg);
+  background-size: cover;
+  background-position: center;
+}
+
+/* 테두리 PNG는 가운데가 투명한 오버레이다. 배경 위, 글자 아래가 아니라 맨 위에 얹되 클릭은 통과시킨다. */
+.board::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--frame);
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+}
+
+/* 메뉴명·매장명: Nanum Myeongjo — 인쇄 메뉴판의 세리프 느낌 */
+.store-name {
+  margin: 0;
+  font-family: "Nanum Myeongjo", serif;
+  font-size: var(--store-size);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.page-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 3vmin;
+  margin-top: 3vmin;
+  padding-top: 2.2vmin;
+  border-top: 1px solid var(--sub);
+}
+
+.page-tab {
+  margin: 0;
+  padding: 0 0 0.6vmin;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: var(--sub);
+  font-family: "Nanum Myeongjo", serif;
+  font-size: var(--tab-size);
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 150ms;
+}
+
+.page-tab[aria-selected="true"] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.menu-list {
+  flex: 1;
+  min-height: 0;
+  margin-top: 4vmin;
+  overflow-y: auto;
+}
+
+.category + .category {
+  margin-top: 4vmin;
+}
+
+.category-title {
+  margin: 0 0 2vmin;
+  color: var(--sub);
+  font-size: var(--category-size);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+}
+
+.items {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), 1fr);
+  gap: 3.2vmin 7.5vmin;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1.2vmin;
+}
+
+.item-name {
+  font-size: var(--name-size);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 이름과 가격을 잇는 점선: 어느 가격이 어느 메뉴인지 눈으로 따라가게 한다 */
+.item-leader {
+  flex: 1;
+  align-self: center;
+  margin: 0 0.6vmin;
+  border-bottom: 1px dotted var(--sub);
+}
+
+.item-price {
+  color: var(--accent);
+  font-size: var(--name-size);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.item-desc {
+  margin: 0.7vmin 0 0;
+  color: var(--sub);
+  font-size: var(--desc-size);
+  line-height: 1.3;
+}
+
+/* 품절: 취소선 + 흐림 + "품절" 라벨 (PRD 도메인 규칙) */
+.item.is-sold-out {
+  opacity: 0.5;
+}
+.item.is-sold-out .item-name {
+  color: var(--sub);
+  text-decoration: line-through;
+}
+.item.is-sold-out .item-price {
+  color: var(--sub);
+}
+
+.sold-out-label {
+  padding: 0.2vmin 0.9vmin;
+  border: 1px solid var(--sub);
+  border-radius: 2px;
+  color: var(--sub);
+  font-size: calc(var(--desc-size) * 0.85);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.empty-message {
+  color: var(--sub);
+  font-size: var(--desc-size);
+}

@@ -12,7 +12,7 @@ Excel 파일(`data/menu.xlsx`) 하나로 카페 메뉴판 웹 화면을 구동�
 - 원본 요구사항: `docs/menu-project-requirement.md`
 - 디자인 핸드오프: `design/project/메뉴판 템플릿 시스템.dc.html` (프로토타입이다. 구조를 복사하지 말고 시각 결과만 맞춘다)
 
-현재 상태: 서버(`server.mjs` + `src/`)는 동작한다. 화면(`public/index.html`, `client.js`, 테마 CSS·에셋)은 아직 없다. 진행 상황은 `TDD-IMPLEMENTS.md`를 본다.
+현재 상태: 서버(`server.mjs` + `src/`)와 화면(`public/index.html`, `client.js`, `templates/*.css`, `assets/`)이 동작한다. PRD 7절 인수 조건 6개를 브라우저에서 확인했다. 진행 상황은 `TDD-IMPLEMENTS.md`를 본다.
 
 ## 명령어
 

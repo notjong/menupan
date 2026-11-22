@@ -1,0 +1,16 @@
+/* light-olive — 색은 docs/TRD.md 6절, surface는 bg PNG의 평균색(PNG를 받기 전 잠깐 보이는 바탕). */
+:root {
+  --text: #33381f;
+  --sub: #6e7350;
+  --accent: #6f7637;
+  --surface: #cdcfb1;
+
+  --bg-mobile: url("/assets/light-olive/bg-mobile.png");
+  --bg-tablet-port: url("/assets/light-olive/bg-tablet-port.png");
+  --bg-tablet-land: url("/assets/light-olive/bg-tablet-land.png");
+  --bg-signage: url("/assets/light-olive/bg-signage.png");
+  --frame-mobile: url("/assets/light-olive/frame-mobile.png");
+  --frame-tablet-port: url("/assets/light-olive/frame-tablet-port.png");
+  --frame-tablet-land: url("/assets/light-olive/frame-tablet-land.png");
+  --frame-signage: url("/assets/light-olive/frame-signage.png");
+}
