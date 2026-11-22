@@ -23,7 +23,7 @@ Excel 워크북을 화면용 데이터(JSON)로 바꾼다. 파일 대신 테스�
 
 ### 2-1. 시트 → 페이지
 
-- [ ] **시트 하나가 메뉴판 페이지 하나가 된다** (`shouldTurnEachSheetIntoPage`)
+- [x] **시트 하나가 메뉴판 페이지 하나가 된다** (`shouldTurnEachSheetIntoPage`)
   - 시트 `커피`, `디저트` → 페이지 2개, 이름 `커피`, `디저트`
 - [ ] **`_`로 시작하는 시트는 페이지에서 뺀다** (`shouldExcludeSheetsStartingWithUnderscore`)
   - 시트 `커피`, `_설정` → 페이지는 `커피` 1개뿐
