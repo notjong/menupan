@@ -73,7 +73,9 @@ export function parseWorkbook(workbook, { themes = [], defaultTheme } = {}) {
     storeName: settings[SETTING_KEYS.storeName] ?? "",
     theme: toTheme(settings[SETTING_KEYS.theme], { themes, defaultTheme }),
     autoAdvanceSec: toAutoAdvanceSec(settings[SETTING_KEYS.autoAdvanceSec]),
-    device: settings[SETTING_KEYS.device],
+    device: ["mobile", "tablet-port", "tablet-land", "signage"].includes(settings[SETTING_KEYS.device])
+      ? settings[SETTING_KEYS.device]
+      : "tablet-port",
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
       items: parseMenuSheet(workbook.Sheets[name]),

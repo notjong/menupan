@@ -173,3 +173,11 @@ test("shouldReadDeviceFromSettingsSheet", () => {
 
   assert.equal(parseWorkbook(workbook, THEME_OPTIONS).device, "mobile");
 });
+
+test("shouldFallBackToDefaultDeviceWhenUnknown", () => {
+  const withDevice = makeWorkbook({ 커피: [MENU_HEADER], _설정: [SETTINGS_HEADER, ["디바이스", "tv"]] });
+  const withoutSettings = makeWorkbook({ 커피: [MENU_HEADER] });
+
+  assert.equal(parseWorkbook(withDevice, THEME_OPTIONS).device, "tablet-port");
+  assert.equal(parseWorkbook(withoutSettings, THEME_OPTIONS).device, "tablet-port");
+});

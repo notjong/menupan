@@ -461,11 +461,13 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T32 모르는 디바이스는 기본 디바이스로 바꾼다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/parse-workbook.test.mjs` › `shouldFallBackToDefaultDeviceWhenUnknown`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: `디바이스 = tv` → `"tablet-port"`, `_설정` 없음 → `"tablet-port"`
 - Red 기대 실패: `AssertionError` (`tv`가 그대로 나옴)
+- Red 기록: `AssertionError: 'tv' !== 'tablet-port'`
+- Green 기록: Obvious Implementation. 디바이스 4종 목록에 있으면 그대로, 아니면 `tablet-port`. 남은 하드코딩: 목록과 기본값이 식 안에 들어 있음.
 
 ### T33 `_설정`의 영문태그를 읽는다
 
