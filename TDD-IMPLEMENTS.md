@@ -441,3 +441,129 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 - 디바이스: `board-grid.css`의 미디어쿼리만 판별한다. 가로 → `tablet-land`(2열), 세로 비율 ≤ 17/32 → `mobile`, ≤ 21/32 → `signage`, 그 외 `tablet-port`. 메뉴판은 그 디바이스 비율(예: 4:3)의 캔버스로 창 안에 맞춰 넣고 남는 곳은 바탕색으로 둔다. 크기 단위는 캔버스 짧은 변의 1%이고, 휴대폰에서 읽히도록 글자 최소 크기를 둔다.
 - 페이지 0개: `resolvePageIndex`가 `-1`을 내는 경우는 `client.js`가 빈 안내 문구로 처리한다(함수는 그대로).
 - 확인(headless Chrome + CDP, 2026-11-22): 4개 디바이스 모두 배경·테두리 PNG와 열 수가 맞다. Excel 수정 후 1초 안에 반영됨 — 가격 4,500→4,800원, 카페라떼 `품절=Y`, `시즌` 시트 추가로 탭 4개, 테마 `deep-green`→`cream`, `자동전환초=5`로 5초마다 커피→디저트→음료. 확인 뒤 `data/menu.xlsx`는 원본으로 되돌렸다(shasum 동일).
+
+---
+
+## 8. 어드민 설정
+
+공통: 어드민은 `_설정` 시트를 고치는 화면이다. 저장은 Excel 파일에 쓰고, 화면 갱신은 기존 감시 → SSE 흐름에 맡긴다. 디바이스는 이제 `_설정`의 값으로 정한다(창 비율로 고르지 않는다).
+
+### T31 `_설정`의 디바이스를 읽는다
+
+- 상태: TODO
+- 테스트: `test/parse-workbook.test.mjs` › `shouldReadDeviceFromSettingsSheet`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `_설정`에 `디바이스 = mobile` → `menu.device === "mobile"`
+- Red 기대 실패: `AssertionError` (`device`가 `undefined`)
+
+### T32 모르는 디바이스는 기본 디바이스로 바꾼다
+
+- 상태: TODO
+- 테스트: `test/parse-workbook.test.mjs` › `shouldFallBackToDefaultDeviceWhenUnknown`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `디바이스 = tv` → `"tablet-port"`, `_설정` 없음 → `"tablet-port"`
+- Red 기대 실패: `AssertionError` (`tv`가 그대로 나옴)
+
+### T33 `_설정`의 영문태그를 읽는다
+
+- 상태: TODO
+- 테스트: `test/parse-workbook.test.mjs` › `shouldReadTaglineFromSettingsSheet`
+- 대상: `src/parse-workbook.mjs` › `parseWorkbook`
+- 주어진 상황 → 기대 결과: `영문태그 = SPECIALTY COFFEE` → `tagline: "SPECIALTY COFFEE"`, 없으면 `""`
+- Red 기대 실패: `AssertionError` (`tagline`이 `undefined`)
+
+### T34 `_설정`의 값을 바꾸고 메뉴 시트는 건드리지 않는다
+
+- 상태: TODO
+- 테스트: `test/write-settings.test.mjs` › `shouldWriteSettingsIntoSettingsSheet`
+- 대상: `src/write-settings.mjs` › `writeSettings(workbook, settings)`
+- 주어진 상황 → 기대 결과: 테마 `beige`인 워크북에 `{ theme: "cream", ... }` 저장 → 다시 파싱하면 `theme: "cream"`, 커피 시트 항목 그대로
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/write-settings.mjs` 없음)
+
+### T35 없는 설정 행과 `_설정` 시트는 새로 만든다
+
+- 상태: TODO
+- 테스트: `test/write-settings.test.mjs` › `shouldCreateSettingsSheetWhenMissing`
+- 대상: `src/write-settings.mjs` › `writeSettings`
+- 주어진 상황 → 기대 결과: `_설정` 없는 워크북에 저장 → `_설정` 시트가 마지막에 생기고 다시 파싱하면 저장한 값
+- Red 기대 실패: `TypeError` (없는 시트를 읽음)
+
+### T36 올바른 입력은 다듬어서 받는다
+
+- 상태: TODO
+- 테스트: `test/validate-settings.test.mjs` › `shouldAcceptValidSettings`
+- 대상: `src/validate-settings.mjs` › `validateSettings(input, { themes, devices })`
+- 주어진 상황 → 기대 결과: 매장명 `" 빌런 커피 "`, 자동전환초 `"5"` → `{ ok: true, settings: { storeName: "빌런 커피", autoAdvanceSec: 5, ... } }`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND`
+
+### T37 모르는 테마·디바이스는 거절한다
+
+- 상태: TODO
+- 테스트: `test/validate-settings.test.mjs` › `shouldRejectUnknownThemeOrDevice`
+- 대상: `src/validate-settings.mjs` › `validateSettings`
+- 주어진 상황 → 기대 결과: 테마 `purple`, 디바이스 `tv` → `ok: false`, `errors`의 필드가 `["theme", "device"]`
+- Red 기대 실패: `AssertionError` (`ok: true`)
+
+### T38 자동전환초는 0 이상 정수만 받는다
+
+- 상태: TODO
+- 테스트: `test/validate-settings.test.mjs` › `shouldRejectInvalidAutoAdvanceSec`
+- 대상: `src/validate-settings.mjs` › `validateSettings`
+- 주어진 상황 → 기대 결과: `-1`, `1.5`, `"빠르게"` → 모두 `ok: false`
+- Red 기대 실패: `AssertionError`
+
+### T39 맞는 계정에만 세션을 준다
+
+- 상태: TODO
+- 테스트: `test/admin-auth.test.mjs` › `shouldIssueSessionOnlyForCorrectCredentials`
+- 대상: `src/admin-auth.mjs` › `createAdminAuth({ username, password })`
+- 주어진 상황 → 기대 결과: `login("admin", "1234")` → 토큰, `isValid(토큰) === true`. `login("admin", "0000")` → `null`
+- Red 기대 실패: `ERR_MODULE_NOT_FOUND`
+
+### T40 세션 없이 설정 API를 부르면 401
+
+- 상태: TODO
+- 테스트: `test/app.test.mjs` › `shouldRejectAdminSettingsWithoutSession`
+- 대상: `src/app.mjs` › `createApp`
+- 주어진 상황 → 기대 결과: 쿠키 없이 `GET /api/admin/settings` → 401
+- Red 기대 실패: `AssertionError` (404)
+
+### T41 로그인하면 HttpOnly 세션 쿠키를 준다
+
+- 상태: TODO
+- 테스트: `test/app.test.mjs` › `shouldLoginAndSetSessionCookie`
+- 대상: `src/app.mjs` › `POST /api/admin/login`
+- 주어진 상황 → 기대 결과: 맞는 계정 → 200, `Set-Cookie`에 `HttpOnly`. 틀린 계정 → 401
+- Red 기대 실패: `AssertionError` (404)
+
+### T42 세션이 있으면 현재 설정과 선택지를 준다
+
+- 상태: TODO
+- 테스트: `test/app.test.mjs` › `shouldReturnCurrentSettingsAndOptions`
+- 대상: `src/app.mjs` › `GET /api/admin/settings`
+- 주어진 상황 → 기대 결과: 로그인 쿠키로 요청 → 200, `{ settings: { storeName, tagline, theme, device, autoAdvanceSec }, themes, devices }`
+- Red 기대 실패: `AssertionError` (401 또는 본문 없음)
+
+### T43 올바른 설정을 저장한다
+
+- 상태: TODO
+- 테스트: `test/app.test.mjs` › `shouldSaveValidSettingsWithSession`
+- 대상: `src/app.mjs` › `PUT /api/admin/settings`
+- 주어진 상황 → 기대 결과: 로그인 쿠키 + 올바른 JSON → 204, `saveSettings`가 검증된 값으로 1번 불림
+- Red 기대 실패: `AssertionError` (404)
+
+### T44 잘못된 설정은 400이고 저장하지 않는다
+
+- 상태: TODO
+- 테스트: `test/app.test.mjs` › `shouldRejectInvalidSettingsWith400`
+- 대상: `src/app.mjs` › `PUT /api/admin/settings`
+- 주어진 상황 → 기대 결과: 테마 `purple` → 400, 본문 `errors`, `saveSettings` 0번
+- Red 기대 실패: `AssertionError` (204)
+
+### T45 로그아웃하면 세션이 끊긴다
+
+- 상태: TODO
+- 테스트: `test/app.test.mjs` › `shouldEndSessionOnLogout`
+- 대상: `src/app.mjs` › `POST /api/admin/logout`
+- 주어진 상황 → 기대 결과: 로그아웃 뒤 같은 쿠키로 `GET /api/admin/settings` → 401
+- Red 기대 실패: `AssertionError` (404 또는 200)

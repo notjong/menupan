@@ -108,3 +108,50 @@ DOM 없이 테스트할 수 있게 계산만 따로 뺀다.
   - 3번째 페이지를 보는 중 시트 삭제로 2페이지가 됨 → 2번째 페이지
 - [x] **자동 전환은 마지막 다음에 처음으로 돌아간다** (`shouldComputeNextPageIndexCyclically`)
   - 3페이지 중 3번째 → 다음은 1번째
+
+## 7. 어드민 설정 — `/admin`에서 `_설정` 시트를 고친다
+
+어드민에서 테마·디바이스·매장 설정을 저장하면 Excel `_설정` 시트에 쓴다. 그러면 기존 파일 감시 → SSE 흐름으로 메뉴판이 바뀐다. 데이터 출처는 여전히 Excel 하나다.
+
+### 7.1 설정 읽기 — `src/parse-workbook.mjs`
+
+- [ ] **`_설정`의 디바이스를 읽는다** (`shouldReadDeviceFromSettingsSheet`)
+  - `디바이스 = mobile` → `device: "mobile"`
+- [ ] **모르는 디바이스는 기본 디바이스로 바꾼다** (`shouldFallBackToDefaultDeviceWhenUnknown`)
+  - `디바이스 = tv` 또는 없음 → `device: "tablet-port"`
+- [ ] **`_설정`의 영문태그를 읽는다** (`shouldReadTaglineFromSettingsSheet`)
+  - `영문태그 = SPECIALTY COFFEE` → `tagline: "SPECIALTY COFFEE"`, 없으면 `""`
+
+### 7.2 설정 쓰기 — `src/write-settings.mjs`
+
+- [ ] **`_설정`의 값을 바꾸고 메뉴 시트는 건드리지 않는다** (`shouldWriteSettingsIntoSettingsSheet`)
+  - 테마 `beige` → `cream`으로 저장 → 다시 파싱하면 `cream`, 커피 시트 항목은 그대로
+- [ ] **없는 설정 행과 `_설정` 시트는 새로 만든다** (`shouldCreateSettingsSheetWhenMissing`)
+  - `_설정` 없는 워크북에 저장 → `_설정` 시트가 생기고 다시 파싱하면 저장한 값
+
+### 7.3 입력 검증 — `src/validate-settings.mjs`
+
+- [ ] **올바른 입력은 다듬어서 받는다** (`shouldAcceptValidSettings`)
+  - 매장명 `" 빌런 커피 "`, 자동전환초 `"5"` → `storeName: "빌런 커피"`, `autoAdvanceSec: 5`
+- [ ] **모르는 테마·디바이스는 거절한다** (`shouldRejectUnknownThemeOrDevice`)
+  - 테마 `purple`, 디바이스 `tv` → `ok: false`, 오류에 `theme`, `device`
+- [ ] **자동전환초는 0 이상 정수만 받는다** (`shouldRejectInvalidAutoAdvanceSec`)
+  - `-1`, `1.5`, `"빠르게"` → 모두 `ok: false`
+
+### 7.4 로그인 — `src/admin-auth.mjs`
+
+- [ ] **맞는 계정에만 세션을 준다** (`shouldIssueSessionOnlyForCorrectCredentials`)
+  - `admin/1234` → 토큰, 그 토큰은 유효. `admin/0000` → `null`
+
+### 7.5 어드민 API — `src/app.mjs`
+
+- [ ] **세션 없이 설정 API를 부르면 401** (`shouldRejectAdminSettingsWithoutSession`)
+- [ ] **로그인하면 HttpOnly 세션 쿠키를 준다** (`shouldLoginAndSetSessionCookie`)
+  - 맞는 계정 → 200 + `Set-Cookie: ...; HttpOnly`, 틀린 계정 → 401
+- [ ] **세션이 있으면 현재 설정과 선택지를 준다** (`shouldReturnCurrentSettingsAndOptions`)
+  - → `{ settings, themes, devices }`
+- [ ] **올바른 설정을 저장한다** (`shouldSaveValidSettingsWithSession`)
+  - `PUT /api/admin/settings` → `saveSettings`가 검증된 값으로 1번 불림, 204
+- [ ] **잘못된 설정은 400이고 저장하지 않는다** (`shouldRejectInvalidSettingsWith400`)
+- [ ] **로그아웃하면 세션이 끊긴다** (`shouldEndSessionOnLogout`)
+  - 로그아웃 뒤 같은 쿠키로 설정 API → 401
