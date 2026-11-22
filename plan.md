@@ -8,7 +8,7 @@
 
 ---
 
-## 1. 가격 표시 — `src/format.mjs`
+## 1. 가격 표시 — `public/format.mjs`
 
 Excel에는 숫자만 넣고, 화면에는 "4,500원"처럼 보여야 한다.
 

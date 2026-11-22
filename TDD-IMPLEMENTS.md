@@ -48,7 +48,7 @@ TODO ──/tdd-red──▶ RED ──/tdd-green──▶ GREEN ──/tdd-refa
 
 - 상태: DONE
 - 테스트: `test/format.test.mjs` › `shouldFormatPriceWithCommaAndWon`
-- 대상: `src/format.mjs` › `formatPrice(price)`
+- 대상: `public/format.mjs` (원래 `src/format.mjs`) › `formatPrice(price)`
 - 주어진 상황 → 기대 결과: `formatPrice(4500)` → `"4,500원"`
 - Red 기대 실패: `ERR_MODULE_NOT_FOUND` (`src/format.mjs` 없음)
 - Red 기록: `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/format.mjs' imported from .../test/format.test.mjs` (tests 1, fail 1)
@@ -59,7 +59,7 @@ TODO ──/tdd-red──▶ RED ──/tdd-green──▶ GREEN ──/tdd-refa
 
 - 상태: DONE
 - 테스트: `test/format.test.mjs` › `shouldReturnEmptyStringWhenPriceIsNull`
-- 대상: `src/format.mjs` › `formatPrice(price)`
+- 대상: `public/format.mjs` (원래 `src/format.mjs`) › `formatPrice(price)`
 - 주어진 상황 → 기대 결과: `formatPrice(null)` → `""`
 - Red 기대 실패: `AssertionError` (`"null원"` 같은 값이 나옴)
 - Red 기록: `AssertionError: actual '0원', expected ''` (Intl.NumberFormat이 null을 0으로 바꿈)

@@ -27,7 +27,6 @@ package.json
 server.mjs                 # 조립: express + watcher + SSE (얇게 유지)
 src/
   parse-workbook.mjs       # 순수: workbook → MenuData
-  format.mjs               # 순수: 가격 포맷 등 (클라이언트와 공유)
   debounce.mjs             # 순수: 타이머 주입 가능한 디바운스
   sse-hub.mjs              # 연결된 클라이언트 목록 + broadcast
 test/
@@ -36,6 +35,8 @@ data/menu.xlsx
 public/
   index.html
   client.js                # EventSource 수신 → fetch → render
+  format.mjs               # 순수: 가격 포맷 (브라우저도 import하므로 public/에 둔다)
+  board-state.mjs          # 순수: 카테고리 묶기, 페이지 인덱스 계산
   templates/
     board-grid.css         # 공통 레이아웃 (CSS 변수 기반)
     <theme>.css            # 테마별 변수 값
@@ -80,7 +81,7 @@ public/
 
 ### 3.3 가격 포맷
 
-`formatPrice(4500) → "4,500원"`. `Intl.NumberFormat('ko-KR')`을 쓴다. 서버와 클라이언트가 같은 함수를 쓴다.
+`formatPrice(4500) → "4,500원"` (`public/format.mjs`). `Intl.NumberFormat('ko-KR')`을 쓴다. 서버와 클라이언트가 같은 함수를 쓴다.
 
 ## 4. 갱신 흐름
 
