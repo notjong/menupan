@@ -130,3 +130,13 @@ test("shouldRejectInvalidSettingsWith400", async (t) => {
   assert.equal((await response.json()).errors[0].field, "theme");
   assert.equal(saveSettings.mock.callCount(), 0);
 });
+
+test("shouldEndSessionOnLogout", async (t) => {
+  const baseUrl = await startServer(t, createAdminApp());
+  const cookie = await loginCookie(baseUrl);
+
+  await postJson(`${baseUrl}/api/admin/logout`, {}, { cookie });
+  const response = await fetch(`${baseUrl}/api/admin/settings`, { headers: { cookie } });
+
+  assert.equal(response.status, 401);
+});

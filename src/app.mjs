@@ -49,5 +49,10 @@ export function createApp({ getMenu, hub, auth, getThemes, saveSettings }) {
     res.cookie(SESSION_COOKIE, token, SESSION_COOKIE_OPTIONS);
     res.sendStatus(200);
   });
+  app.post("/api/admin/logout", (req, res) => {
+    auth.logout(readCookie(req, SESSION_COOKIE));
+    res.clearCookie(SESSION_COOKIE, SESSION_COOKIE_OPTIONS);
+    res.sendStatus(204);
+  });
   return app;
 }

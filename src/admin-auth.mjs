@@ -21,5 +21,8 @@ export function createAdminAuth({ username, password }) {
     isValid(token) {
       return sessions.has(token);
     },
+    logout(token) {
+      sessions.delete(token);
+    },
   };
 }
