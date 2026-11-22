@@ -516,11 +516,13 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 
 ### T37 모르는 테마·디바이스는 거절한다
 
-- 상태: TODO
+- 상태: GREEN
 - 테스트: `test/validate-settings.test.mjs` › `shouldRejectUnknownThemeOrDevice`
 - 대상: `src/validate-settings.mjs` › `validateSettings`
 - 주어진 상황 → 기대 결과: 테마 `purple`, 디바이스 `tv` → `ok: false`, `errors`의 필드가 `["theme", "device"]`
 - Red 기대 실패: `AssertionError` (`ok: true`)
+- Red 기록: `AssertionError: true !== false`
+- Green 기록: Obvious Implementation. 테마·디바이스가 받은 목록에 없으면 `{ field, message }`를 모아 `ok: false`. 남은 하드코딩: 검사 두 줄이 같은 모양.
 
 ### T38 자동전환초는 0 이상 정수만 받는다
 

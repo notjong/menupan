@@ -16,3 +16,10 @@ test("shouldAcceptValidSettings", () => {
 
   assert.deepEqual(result, { ok: true, settings: VALID_INPUT });
 });
+
+test("shouldRejectUnknownThemeOrDevice", () => {
+  const result = validateSettings({ ...VALID_INPUT, theme: "purple", device: "tv" }, OPTIONS);
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.errors.map((error) => error.field), ["theme", "device"]);
+});
