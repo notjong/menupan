@@ -161,14 +161,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T10 가격이 숫자가 아니면 `null`로 둔다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldSetPriceNullWhenNotNumeric`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: 가격 `"시가"` → `price: null`, 가격 `"4,500원"` → `price: null`
 - Red 기대 실패: `AssertionError` (`"시가"`, `NaN` 등이 나옴)
 - Red 기록: `AssertionError: actual ['시가', '4,500원'], expected [null, null]`
 - Green 기록: Obvious Implementation. `Number.isFinite`가 아니면 `null`. 숫자 셀만 가격으로 인정한다(텍스트 `"4500"`은 변환하지 않음 — 테스트 범위 밖). 정리 거리: 같은 셀 접근 2번.
-- Refactor 기록:
+- Refactor 기록: Extract Function `toPrice`(같은 셀 중복 접근 제거). `npm test` 통과. 남은 하드코딩 없음.
 
 ### T11 카테고리가 빈칸이면 빈 문자열로 둔다
 

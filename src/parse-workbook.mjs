@@ -23,10 +23,14 @@ function isSoldOutMark(value) {
   return String(value ?? "").trim().toUpperCase() === SOLD_OUT_MARK;
 }
 
+function toPrice(value) {
+  return Number.isFinite(value) ? value : null;
+}
+
 function toMenuItem(row) {
   return {
     name: row[MENU_COLUMNS.name],
-    price: Number.isFinite(row[MENU_COLUMNS.price]) ? row[MENU_COLUMNS.price] : null,
+    price: toPrice(row[MENU_COLUMNS.price]),
     desc: row[MENU_COLUMNS.desc],
     soldOut: isSoldOutMark(row[MENU_COLUMNS.soldOut]),
     category: row[MENU_COLUMNS.category],
