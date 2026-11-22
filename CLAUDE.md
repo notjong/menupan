@@ -12,7 +12,7 @@ Excel 파일(`data/menu.xlsx`) 하나로 카페 메뉴판 웹 화면을 구동�
 - 원본 요구사항: `docs/menu-project-requirement.md`
 - 디자인 핸드오프: `design/project/메뉴판 템플릿 시스템.dc.html` (프로토타입이다. 구조를 복사하지 말고 시각 결과만 맞춘다)
 
-현재 상태: 서버(`server.mjs` + `src/`)와 화면(`public/index.html`, `client.js`, `templates/*.css`, `assets/`)이 동작한다. PRD 7절 인수 조건 6개를 브라우저에서 확인했다. 진행 상황은 `TDD-IMPLEMENTS.md`를 본다.
+현재 상태: 서버(`server.mjs` + `src/`), 메뉴판 화면(`/`), 어드민(`/admin`, `admin/1234`)이 동작한다. 어드민 저장은 `_설정` 시트에 쓰고 SSE로 메뉴판에 반영된다. 진행 상황은 `TDD-IMPLEMENTS.md`를 본다.
 
 ## 명령어
 
@@ -37,9 +37,9 @@ menu.xlsx 저장 ─chokidar(300ms 디바운스)─▶ server.mjs ─SSE "menu-u
 
 - **서버는 순수 함수와 I/O를 분리한다.** `parseWorkbook(workbook) → MenuData` 같은 순수 파싱 로직이 테스트의 중심이다. Express 라우트, chokidar, SSE는 얇은 어댑터로 둔다.
 - **SSE 이벤트는 "다시 가져와라"는 신호만 보낸다.** 데이터는 클라이언트가 `GET /api/menu`로 다시 받는다. 데이터 계약은 하나만 둔다.
-- **`_` 접두사 시트는 페이지가 아니다.** `_설정`에서 매장명·테마·자동전환초를 읽는다.
+- **`_` 접두사 시트는 페이지가 아니다.** `_설정`에서 매장명·영문태그·테마·디바이스·자동전환초를 읽는다. 어드민(`/admin`)이 이 시트에 쓴다.
 - **테마는 CSS + PNG만 교체한다.** 공통 레이아웃은 CSS 변수를 쓰는 `board-grid.css`가 맡는다. 테마별 배경·테두리 PNG는 `assets/<테마>/{bg,frame}-<디바이스>.png`에 둔다. 테두리는 가운데가 투명한 오버레이라 배경 위에 겹친다.
-- 디바이스는 4종이다: `mobile` 1080×2160, `tablet-port` 1440×1920, `tablet-land` 1920×1440(2열), `signage` 1080×1920.
+- 디바이스는 4종이다: `mobile` 1080×2160, `tablet-port` 1440×1920, `tablet-land` 1920×1440(2열), `signage` 1080×1920. 창 비율로 고르지 않고 `_설정`의 `디바이스` 값을 쓴다(목록은 `src/devices.mjs`).
 - 테마 목록은 원본 요구사항(`cafe-dark`, `bistro-light`)과 디자인 번들(`beige`, `cream`, `deep-green`, `light-olive`)이 다르다. 확정 전에는 `docs/TRD.md`의 "미결 사항"을 따르고, 임의로 하나를 버리지 않는다.
 
 ## 도메인 규칙 (테스트로 고정할 것)

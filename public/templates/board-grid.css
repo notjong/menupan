@@ -31,33 +31,26 @@
   --desc-size: max(calc(var(--u) * 1.85), 12px);
 }
 
-/* 디바이스 판별은 여기서만 한다 (TRD 5절: JS는 디바이스를 판별하지 않는다).
-   창 비율에 가장 가까운 디바이스를 고른다.
-   가로 → tablet-land(4:3, 2열). 세로 → 3:4 tablet-port, 9:16 signage, 1:2 mobile. */
-@media (orientation: landscape) {
-  :root {
-    --device-w: 1920;
-    --device-h: 1440;
-    --columns: 2;
-    --bg: var(--bg-tablet-land, none);
-    --frame: var(--frame-tablet-land, none);
-  }
+/* 디바이스는 어드민이 _설정에 저장한 값이다. client.js가 <html data-device>로 옮긴다.
+   여기서는 디바이스별 캔버스 크기·열 수·PNG만 고른다. 값이 없으면 위의 tablet-port. */
+:root[data-device="tablet-land"] {
+  --device-w: 1920;
+  --device-h: 1440;
+  --columns: 2;
+  --bg: var(--bg-tablet-land, none);
+  --frame: var(--frame-tablet-land, none);
 }
-@media (orientation: portrait) and (max-aspect-ratio: 21/32) {
-  :root {
-    --device-w: 1080;
-    --device-h: 1920;
-    --bg: var(--bg-signage, none);
-    --frame: var(--frame-signage, none);
-  }
+:root[data-device="signage"] {
+  --device-w: 1080;
+  --device-h: 1920;
+  --bg: var(--bg-signage, none);
+  --frame: var(--frame-signage, none);
 }
-@media (orientation: portrait) and (max-aspect-ratio: 17/32) {
-  :root {
-    --device-w: 1080;
-    --device-h: 2160;
-    --bg: var(--bg-mobile, none);
-    --frame: var(--frame-mobile, none);
-  }
+:root[data-device="mobile"] {
+  --device-w: 1080;
+  --device-h: 2160;
+  --bg: var(--bg-mobile, none);
+  --frame: var(--frame-mobile, none);
 }
 
 *,
@@ -103,6 +96,18 @@ body {
   background-image: var(--frame);
   background-size: 100% 100%;
   pointer-events: none;
+}
+
+/* 영문태그: 매장명 위 작은 대문자 한 줄 (디자인 번들의 eyebrow) */
+.tagline {
+  margin: 0 0 calc(var(--u) * 1.4);
+  color: var(--accent);
+  font-size: max(calc(var(--u) * 1.75), 10px);
+  font-weight: 700;
+  letter-spacing: 0.42em;
+}
+.tagline:empty {
+  display: none;
 }
 
 /* 메뉴명·매장명: Nanum Myeongjo — 인쇄 메뉴판의 세리프 느낌 */

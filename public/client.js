@@ -10,11 +10,20 @@ const MENU_UPDATED_EVENT = "menu-updated";
 const DEFAULT_TITLE = "메뉴판";
 const EMPTY_MESSAGE = "표시할 메뉴 시트가 없습니다.";
 
+// 어드민 미리보기(/admin의 iframe, ?preview)에서만 저장 전 설정을 덮어쓴다.
+// 같은 출처의 메시지만 받는다. 일반 화면은 이 값을 쓰지 않는다.
+const PREVIEW_MESSAGE = "menu-preview";
+const isPreview = new URLSearchParams(location.search).has("preview");
+let previewOverrides = {};
+
+const rootEl = document.documentElement;
+const taglineEl = document.getElementById("tagline");
 const storeNameEl = document.getElementById("store-name");
 const tabsEl = document.getElementById("page-tabs");
 const listEl = document.getElementById("menu-list");
 const themeLinkEl = document.getElementById("theme");
 
+let serverMenu = null;
 let menu = null;
 let pageIndex = 0;
 let autoAdvanceSec = 0;
@@ -35,6 +44,11 @@ function applyTheme(theme) {
   }
   const href = `templates/${encodeURIComponent(theme)}.css`;
   if (themeLinkEl.getAttribute("href") !== href) themeLinkEl.setAttribute("href", href);
+}
+
+// 디바이스 값만 옮긴다. 캔버스 크기·열 수·PNG는 board-grid.css가 고른다.
+function applyDevice(device) {
+  rootEl.dataset.device = device;
 }
 
 function renderItem(item) {
@@ -73,6 +87,7 @@ function renderTabs(pages) {
 }
 
 function render() {
+  taglineEl.textContent = menu.tagline ?? "";
   storeNameEl.textContent = menu.storeName;
   document.title = menu.storeName || DEFAULT_TITLE;
 
@@ -102,15 +117,22 @@ function setAutoAdvance(seconds) {
   }
 }
 
-async function loadMenu() {
-  const response = await fetch(MENU_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`${MENU_URL} ${response.status}`);
-  menu = await response.json();
+function applyMenu() {
+  if (!serverMenu) return;
+  menu = { ...serverMenu, ...previewOverrides };
   // 페이지가 0개면 resolvePageIndex가 -1을 낸다. 빈 화면을 그리므로 0으로 둔다.
   pageIndex = menu.pages.length > 0 ? resolvePageIndex(pageIndex, menu.pages.length) : 0;
   applyTheme(menu.theme);
+  applyDevice(menu.device);
   setAutoAdvance(menu.autoAdvanceSec);
   render();
+}
+
+async function loadMenu() {
+  const response = await fetch(MENU_URL, { cache: "no-store" });
+  if (!response.ok) throw new Error(`${MENU_URL} ${response.status}`);
+  serverMenu = await response.json();
+  applyMenu();
 }
 
 // 받기에 실패하면 이전 화면을 그대로 둔다. 다음 신호나 새로고침에서 다시 받는다.
@@ -120,6 +142,14 @@ async function reload() {
   } catch (error) {
     console.error("[menu] 메뉴를 받지 못했다:", error);
   }
+}
+
+if (isPreview) {
+  window.addEventListener("message", (event) => {
+    if (event.origin !== location.origin || event.data?.type !== PREVIEW_MESSAGE) return;
+    previewOverrides = event.data.settings;
+    applyMenu();
+  });
 }
 
 // TRD 5절: 첫 로드를 그린 뒤에 구독한다.

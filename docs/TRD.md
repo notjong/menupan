@@ -78,6 +78,8 @@ public/
 | `_설정` 없음 | 기본값: `storeName=""`, `theme=<기본 테마>`, `autoAdvanceSec=0` |
 | `자동전환초` 음수·비숫자 | `0` |
 | 알 수 없는 `테마` | 기본 테마로 대체 |
+| `디바이스` 4종 밖·없음 | `tablet-port` |
+| `영문태그` 없음 | `""` (`tagline`) |
 
 ### 3.3 가격 포맷
 
@@ -103,9 +105,17 @@ client: EventSource("/events") on "menu-updated" → fetch("/api/menu") → rend
 - 첫 로드에 `/api/menu`를 받고 렌더링한 뒤 `/events`를 구독한다.
 - 갱신 시 현재 페이지 인덱스를 유지한다. 페이지 수가 줄면 마지막 페이지로 보정한다.
 - 테마: `<link id="theme">`의 `href`를 `templates/<theme>.css`로 바꾼다. 배경·테두리는 CSS 변수로 `assets/<theme>/{bg,frame}-<device>.png`를 지정한다.
-- 디바이스 판별은 CSS 미디어쿼리(방향·폭)로 한다. JS는 디바이스를 판별하지 않는다.
+- 디바이스는 `_설정`의 `디바이스` 값이다(어드민에서 고른다). `client.js`는 값을 `<html data-device>`로 옮기기만 하고, 캔버스 비율·열 수·PNG는 `board-grid.css`가 고른다. 메뉴판은 그 비율의 캔버스로 창 안에 맞춰 넣는다.
 - 자동 전환: `autoAdvanceSec > 0`이면 `setInterval`로 다음 페이지로 순환한다. 값이 바뀌면 타이머를 다시 만든다.
 - 사용자 데이터는 `textContent`로 넣는다. `innerHTML`에 Excel 값을 넣지 않는다(XSS 방지).
+
+## 5.1 어드민 (`/admin`)
+
+- 로그인: `POST /api/admin/login` → `admin_session` 쿠키(HttpOnly, SameSite=Strict). 세션은 메모리에만 두며 서버를 다시 켜면 다시 로그인한다. 계정은 `server.mjs`의 `ADMIN_ACCOUNT`(강의용 `admin/1234`).
+- `GET /api/admin/settings` → `{ settings, themes, devices }`. `PUT` → `validateSettings` 통과 시 `saveSettings` 후 204, 실패 시 400 `{ errors }`. 세션이 없으면 401. `POST /api/admin/logout`.
+- 저장: `writeSettings`가 `_설정` 시트 값만 바꾸고, `server.mjs`가 옆 파일에 다 쓴 뒤 이름을 바꿔 `menu.xlsx`를 교체한다. 화면 갱신은 기존 감시 → SSE 흐름이 맡는다(어드민이 직접 신호를 보내지 않는다).
+- 미리보기: `/admin`의 iframe이 `/?preview`를 디바이스 크기 그대로 띄워 축소한다. 저장 전 값은 같은 출처 `postMessage`로 그 iframe에만 덮어쓴다.
+- 주의: SheetJS 커뮤니티판은 셀 서식을 다시 쓰지 않는다. 어드민에서 저장하면 `menu.xlsx`의 글꼴·색 같은 서식이 사라질 수 있다. Excel에서 파일을 연 채로 어드민 저장을 하면, 나중에 Excel에서 저장할 때 어드민 값을 덮어쓴다.
 
 ## 6. 테마·디자인
 

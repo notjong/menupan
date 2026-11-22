@@ -612,3 +612,11 @@ HTTP 테스트는 `app.listen(0)`으로 빈 포트에 띄우고 `fetch`로 부�
 - Red 기록: `AssertionError: 200 !== 401` (로그아웃 라우트가 없어 세션이 남음)
 - Green 기록: Obvious Implementation. `auth.logout(token)`이 메모리 세션을 지우고, 라우트가 쿠키도 지운 뒤 204. 남은 하드코딩 없음.
 - Refactor 기록: (1) Extract Function `createAdminRouter`(`express.Router`): 어드민 라우트 4개와 `requireSession`을 `/api/admin` 아래로 모은다 (2) Extract Function `pickSettings`. `npm test` 통과. 남은 하드코딩 없음.
+
+### 8.x 화면 연결 (테스트 항목 없음, 브라우저 확인)
+
+- `server.mjs`: `createAdminAuth(ADMIN_ACCOUNT)`, `getThemes: listThemes`, `saveSettings`(읽기 → `writeSettings` → 옆 파일에 쓰고 이름 바꾸기) 조립. `GET /admin` → `public/admin.html`.
+- `public/client.js`: `menu.device`를 `<html data-device>`로, `menu.tagline`을 매장명 위에 표시. `?preview`일 때만 같은 출처 `postMessage`로 저장 전 값을 덮어쓴다.
+- `public/templates/board-grid.css`: 디바이스 미디어쿼리를 `:root[data-device]` 선택자로 바꿈.
+- `public/admin.html`·`admin.css`·`admin.js`: 로그인, 테마·디바이스 버튼, `_설정` 입력, 축소 미리보기, 저장·로그아웃.
+- 확인(headless Chrome, 2026-11-22, 임시 3100 포트): 틀린 비밀번호 → 안내 문구. 로그인 → 테마 Cream·디바이스 사이니지·매장명 변경 시 미리보기만 바뀌고 열린 `/`는 그대로. 저장 → 약 1.2초 안에 열린 `/`가 `signage`·`cream`·새 매장명으로 바뀜(SSE). 콘솔 오류 없음. 확인 뒤 `data/menu.xlsx`는 원본으로 되돌림(shasum 동일).
