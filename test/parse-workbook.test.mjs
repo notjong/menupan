@@ -83,3 +83,13 @@ test("shouldMarkItemSoldOutWhenColumnIsY", () => {
   assert.equal(soldOutItem.soldOut, true);
   assert.equal(availableItem.soldOut, false);
 });
+
+test("shouldTreatLowercaseAndPaddedYAsSoldOut", () => {
+  const workbook = makeWorkbook({
+    커피: [MENU_HEADER, ["라떼", 5000, "", "y"], ["모카", 5500, "", " Y "]],
+  });
+
+  const items = parseWorkbook(workbook).pages[0].items;
+
+  assert.deepEqual(items.map((item) => item.soldOut), [true, true]);
+});

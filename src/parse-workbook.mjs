@@ -24,7 +24,7 @@ function toMenuItem(row) {
     name: row[MENU_COLUMNS.name],
     price: row[MENU_COLUMNS.price],
     desc: row[MENU_COLUMNS.desc],
-    soldOut: row[MENU_COLUMNS.soldOut] === SOLD_OUT_MARK,
+    soldOut: String(row[MENU_COLUMNS.soldOut] ?? "").trim().toUpperCase() === SOLD_OUT_MARK,
     category: row[MENU_COLUMNS.category],
   };
 }
