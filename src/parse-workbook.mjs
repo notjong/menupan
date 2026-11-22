@@ -62,11 +62,11 @@ function readSettings(sheet) {
   );
 }
 
-export function parseWorkbook(workbook, { defaultTheme } = {}) {
+export function parseWorkbook(workbook, { themes = [], defaultTheme } = {}) {
   const settings = readSettings(workbook.Sheets[SETTINGS_SHEET]);
   return {
     storeName: settings[SETTING_KEYS.storeName] ?? "",
-    theme: settings[SETTING_KEYS.theme] ?? defaultTheme,
+    theme: themes.includes(settings[SETTING_KEYS.theme]) ? settings[SETTING_KEYS.theme] : defaultTheme,
     autoAdvanceSec: toAutoAdvanceSec(settings[SETTING_KEYS.autoAdvanceSec]),
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,

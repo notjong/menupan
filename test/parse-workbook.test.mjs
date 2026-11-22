@@ -146,3 +146,12 @@ test("shouldClampNegativeAutoAdvanceToZero", () => {
   assert.equal(parseWorkbook(withAutoAdvance(-3), THEME_OPTIONS).autoAdvanceSec, 0);
   assert.equal(parseWorkbook(withAutoAdvance("빠르게"), THEME_OPTIONS).autoAdvanceSec, 0);
 });
+
+test("shouldFallBackToDefaultThemeWhenUnknown", () => {
+  const workbook = makeWorkbook({
+    커피: [MENU_HEADER],
+    _설정: [SETTINGS_HEADER, ["테마", "purple"]],
+  });
+
+  assert.equal(parseWorkbook(workbook, THEME_OPTIONS).theme, "beige");
+});
