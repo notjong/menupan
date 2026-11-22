@@ -51,6 +51,10 @@ function parseMenuSheet(sheet) {
   return XLSX.utils.sheet_to_json(sheet).filter(hasMenuName).map(toMenuItem);
 }
 
+function toAutoAdvanceSec(value) {
+  return Number.isFinite(value) && value > 0 ? value : MANUAL_ADVANCE_SEC;
+}
+
 function readSettings(sheet) {
   if (!sheet) return {};
   return Object.fromEntries(
@@ -63,10 +67,7 @@ export function parseWorkbook(workbook, { defaultTheme } = {}) {
   return {
     storeName: settings[SETTING_KEYS.storeName] ?? "",
     theme: settings[SETTING_KEYS.theme] ?? defaultTheme,
-    autoAdvanceSec:
-      Number.isFinite(settings[SETTING_KEYS.autoAdvanceSec]) && settings[SETTING_KEYS.autoAdvanceSec] > 0
-        ? settings[SETTING_KEYS.autoAdvanceSec]
-        : MANUAL_ADVANCE_SEC,
+    autoAdvanceSec: toAutoAdvanceSec(settings[SETTING_KEYS.autoAdvanceSec]),
     pages: workbook.SheetNames.filter(isMenuSheet).map((name) => ({
       name,
       items: parseMenuSheet(workbook.Sheets[name]),

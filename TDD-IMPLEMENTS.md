@@ -209,14 +209,14 @@ npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 ### T14 자동전환초가 음수거나 글자면 0으로 본다
 
-- 상태: GREEN
+- 상태: DONE
 - 테스트: `test/parse-workbook.test.mjs` › `shouldClampNegativeAutoAdvanceToZero`
 - 대상: `src/parse-workbook.mjs` › `parseWorkbook`
 - 주어진 상황 → 기대 결과: `자동전환초 | -3` → `autoAdvanceSec: 0`, `자동전환초 | 빠르게` → `autoAdvanceSec: 0`
 - Red 기대 실패: `AssertionError` (`-3`, `NaN`이 나옴)
 - Red 기록: `AssertionError: actual -3, expected 0`
 - Green 기록: Obvious Implementation. 유한한 양수만 쓰고 나머지는 `MANUAL_ADVANCE_SEC`. 정리 거리: 같은 설정값 접근 3번, `parseWorkbook` 안의 긴 조건식.
-- Refactor 기록:
+- Refactor 기록: Extract Function `toAutoAdvanceSec`(설정값 중복 접근 3번 제거, `toPrice`와 같은 모양). `npm test` 통과. 남은 하드코딩 없음.
 
 ### T15 없는 테마 이름이면 기본 테마로 바꾼다
 
